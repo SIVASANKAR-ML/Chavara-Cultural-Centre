@@ -1,9 +1,13 @@
+export interface ShowTime {
+  date: string;
+  times: string[];
+}
+
 export interface Event {
   id: string;
   title: string;
   description: string;
-  date: string;
-  time: string;
+  showTimes: ShowTime[];
   image: string;
   category: string;
   price: number;
@@ -32,8 +36,11 @@ export const upcomingEvents: Event[] = [
     id: "evt-001",
     title: "Classical Bharatanatyam Performance",
     description: "Experience the grace and elegance of traditional Bharatanatyam dance by renowned artists from Kerala. A mesmerizing evening of classical Indian dance.",
-    date: "2025-12-15",
-    time: "18:00",
+    showTimes: [
+      { date: "2025-12-15", times: ["18:00", "20:30"] },
+      { date: "2025-12-16", times: ["18:00"] },
+      { date: "2025-12-17", times: ["16:00", "19:00"] }
+    ],
     image: "https://images.unsplash.com/photo-1604762524889-bcde1e9bef2b?w=800&h=600&fit=crop",
     category: "Dance",
     price: 500,
@@ -44,8 +51,10 @@ export const upcomingEvents: Event[] = [
     id: "evt-002",
     title: "Kerala Folk Music Festival",
     description: "Immerse yourself in the rich tapestry of Kerala's folk music traditions. Featuring authentic instruments and celebrated folk musicians.",
-    date: "2025-12-20",
-    time: "19:00",
+    showTimes: [
+      { date: "2025-12-20", times: ["19:00"] },
+      { date: "2025-12-21", times: ["17:00", "20:00"] }
+    ],
     image: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&h=600&fit=crop",
     category: "Music",
     price: 400,
@@ -56,8 +65,11 @@ export const upcomingEvents: Event[] = [
     id: "evt-003",
     title: "Contemporary Art Exhibition",
     description: "Explore the intersection of tradition and modernity through stunning contemporary artworks by local and national artists.",
-    date: "2025-12-25",
-    time: "10:00",
+    showTimes: [
+      { date: "2025-12-25", times: ["10:00", "14:00"] },
+      { date: "2025-12-26", times: ["10:00", "14:00", "17:00"] },
+      { date: "2025-12-27", times: ["10:00"] }
+    ],
     image: "https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?w=800&h=600&fit=crop",
     category: "Art",
     price: 200,
@@ -68,8 +80,10 @@ export const upcomingEvents: Event[] = [
     id: "evt-004",
     title: "Traditional Kathakali Theatre",
     description: "Witness the elaborate costumes and dramatic storytelling of Kathakali, one of Kerala's most iconic classical dance-drama forms.",
-    date: "2025-12-28",
-    time: "18:30",
+    showTimes: [
+      { date: "2025-12-28", times: ["18:30", "21:00"] },
+      { date: "2025-12-29", times: ["18:30"] }
+    ],
     image: "https://images.unsplash.com/photo-1598387181032-a3103a2db5b3?w=800&h=600&fit=crop",
     category: "Theatre",
     price: 600,

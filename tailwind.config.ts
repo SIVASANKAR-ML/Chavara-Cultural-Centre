@@ -56,10 +56,11 @@ export default {
       boxShadow: {
         'elegant': 'var(--shadow-elegant)',
         'card': 'var(--shadow-card)',
+        'gold': 'var(--shadow-gold)',
       },
       fontFamily: {
-        'serif': ['Playfair Display', 'serif'],
-        'sans': ['Inter', 'sans-serif'],
+        'serif': ['Merriweather', 'serif'],
+        'sans': ['Open Sans', 'sans-serif'],
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -17,24 +17,28 @@ const CalendarPage = () => {
   // Get events for a specific date
   const getEventsForDate = (date: Date) => {
     return upcomingEvents.filter(event => {
-      const eventDate = new Date(event.date);
-      return (
-        eventDate.getDate() === date.getDate() &&
-        eventDate.getMonth() === date.getMonth() &&
-        eventDate.getFullYear() === date.getFullYear()
-      );
+      return event.showTimes.some(showTime => {
+        const eventDate = new Date(showTime.date);
+        return (
+          eventDate.getDate() === date.getDate() &&
+          eventDate.getMonth() === date.getMonth() &&
+          eventDate.getFullYear() === date.getFullYear()
+        );
+      });
     });
   };
 
   // Check if date has events
   const hasEvents = (date: Date) => {
     return upcomingEvents.some(event => {
-      const eventDate = new Date(event.date);
-      return (
-        eventDate.getDate() === date.getDate() &&
-        eventDate.getMonth() === date.getMonth() &&
-        eventDate.getFullYear() === date.getFullYear()
-      );
+      return event.showTimes.some(showTime => {
+        const eventDate = new Date(showTime.date);
+        return (
+          eventDate.getDate() === date.getDate() &&
+          eventDate.getMonth() === date.getMonth() &&
+          eventDate.getFullYear() === date.getFullYear()
+        );
+      });
     });
   };
 
@@ -140,7 +144,12 @@ const CalendarPage = () => {
                           <div className="space-y-1 text-sm text-muted-foreground">
                             <div className="flex items-center gap-2">
                               <Clock className="h-4 w-4 text-primary" />
-                              <span>{event.time}</span>
+                              <span>
+                                {event.showTimes
+                                  .filter(st => st.date === (selectedDate instanceof Date ? selectedDate.toISOString().split('T')[0] : ''))
+                                  .flatMap(st => st.times)
+                                  .join(', ')}
+                              </span>
                             </div>
                             <div className="flex items-center gap-2">
                               <MapPin className="h-4 w-4 text-primary" />
@@ -217,15 +226,19 @@ const CalendarPage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <CalendarIcon className="h-4 w-4 text-primary" />
-                        <span>{new Date(event.date).toLocaleDateString("en-US", { 
-                          month: "long", 
-                          day: "numeric", 
-                          year: "numeric" 
-                        })}</span>
+                        <span>
+                          {event.showTimes.length > 1 
+                            ? `${event.showTimes.length} dates available` 
+                            : new Date(event.showTimes[0].date).toLocaleDateString("en-US", { 
+                                month: "long", 
+                                day: "numeric", 
+                                year: "numeric" 
+                              })}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Clock className="h-4 w-4 text-primary" />
-                        <span>{event.time}</span>
+                        <span>Multiple showtimes</span>
                       </div>
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <MapPin className="h-4 w-4 text-primary" />

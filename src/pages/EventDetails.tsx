@@ -5,12 +5,15 @@ import { Calendar, Clock, MapPin, Tag, Users, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import SeatSelector from "@/components/SeatSelector";
+import ShowTimeSelector from "@/components/ShowTimeSelector";
 import { upcomingEvents } from "@/data/events";
 import { toast } from "sonner";
 
 const EventDetails = () => {
   const { eventId } = useParams();
   const navigate = useNavigate();
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
   const [bookedSeats, setBookedSeats] = useState<string[]>([]);
   const [isBooking, setIsBooking] = useState(false);
@@ -18,15 +21,20 @@ const EventDetails = () => {
   const event = upcomingEvents.find(e => e.id === eventId);
 
   useEffect(() => {
-    // Load booked seats from localStorage
+    // Load booked seats from localStorage for selected date/time
     const bookingsData = localStorage.getItem("bookings");
-    if (bookingsData && event) {
+    if (bookingsData && event && selectedDate && selectedTime) {
       const bookings = JSON.parse(bookingsData);
-      const eventBookings = bookings.filter((b: any) => b.eventId === event.id);
+      const eventBookings = bookings.filter(
+        (b: any) => 
+          b.eventId === event.id && 
+          b.eventDate === selectedDate && 
+          b.eventTime === selectedTime
+      );
       const seats = eventBookings.flatMap((b: any) => b.seats);
       setBookedSeats(seats);
     }
-  }, [event]);
+  }, [event, selectedDate, selectedTime]);
 
   if (!event) {
     return (
@@ -50,6 +58,11 @@ const EventDetails = () => {
   };
 
   const handleBooking = async () => {
+    if (!selectedDate || !selectedTime) {
+      toast.error("Please select date and time");
+      return;
+    }
+    
     if (selectedSeats.length === 0) {
       toast.error("Please select at least one seat");
       return;
@@ -71,8 +84,8 @@ const EventDetails = () => {
       id: bookingId,
       eventId: event.id,
       eventTitle: event.title,
-      eventDate: event.date,
-      eventTime: event.time,
+      eventDate: selectedDate,
+      eventTime: selectedTime,
       seats: selectedSeats,
       totalAmount: selectedSeats.length * event.price,
       bookingDate: new Date().toISOString(),
@@ -138,27 +151,7 @@ const EventDetails = () => {
               </span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-primary/10 rounded-lg">
-                  <Calendar className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Date</p>
-                  <p className="font-semibold text-foreground">{formatDate(event.date)}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-primary/10 rounded-lg">
-                  <Clock className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Time</p>
-                  <p className="font-semibold text-foreground">{event.time}</p>
-                </div>
-              </div>
-
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-primary/10 rounded-lg">
                   <MapPin className="h-5 w-5 text-primary" />
@@ -178,51 +171,83 @@ const EventDetails = () => {
                   <p className="font-semibold text-foreground">₹{event.price} per seat</p>
                 </div>
               </div>
+
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-primary/10 rounded-lg">
+                  <Calendar className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Available Dates</p>
+                  <p className="font-semibold text-foreground">{event.showTimes.length} dates</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Show Time Selection */}
+            <div className="border-t border-border pt-8 mb-8">
+              <ShowTimeSelector
+                showTimes={event.showTimes}
+                selectedDate={selectedDate}
+                selectedTime={selectedTime}
+                onDateSelect={(date) => {
+                  setSelectedDate(date);
+                  setSelectedTime(null);
+                  setSelectedSeats([]);
+                }}
+                onTimeSelect={setSelectedTime}
+              />
             </div>
 
             {/* Seat Selection */}
-            <div className="border-t border-border pt-8">
-              <h2 className="font-serif font-bold text-2xl text-foreground mb-6 flex items-center gap-2">
-                <Users className="h-6 w-6 text-primary" />
-                Select Your Seats
-              </h2>
+            {selectedDate && selectedTime && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="border-t border-border pt-8"
+              >
+                <h2 className="font-serif font-bold text-2xl text-foreground mb-6 flex items-center gap-2">
+                  <Users className="h-6 w-6 text-primary" />
+                  Select Your Seats
+                </h2>
 
-              <SeatSelector
-                totalSeats={event.totalSeats}
-                bookedSeats={bookedSeats}
-                onSeatsChange={setSelectedSeats}
-              />
+                <SeatSelector
+                  totalSeats={event.totalSeats}
+                  bookedSeats={bookedSeats}
+                  onSeatsChange={setSelectedSeats}
+                />
+              </motion.div>
+            )}
 
-              {/* Booking Summary */}
-              {selectedSeats.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-8 p-6 bg-primary/5 rounded-lg border border-primary/20"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Total Seats</p>
-                      <p className="text-2xl font-bold text-foreground">{selectedSeats.length}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-muted-foreground">Total Amount</p>
-                      <p className="text-2xl font-bold text-primary">
-                        ₹{selectedSeats.length * event.price}
-                      </p>
-                    </div>
+            {/* Booking Summary */}
+            {selectedSeats.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-8 p-6 bg-primary/5 rounded-lg border border-primary/20"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Total Seats</p>
+                    <p className="text-2xl font-bold text-foreground">{selectedSeats.length}</p>
                   </div>
+                  <div className="text-right">
+                    <p className="text-sm text-muted-foreground">Total Amount</p>
+                    <p className="text-2xl font-bold text-primary">
+                      ₹{selectedSeats.length * event.price}
+                    </p>
+                  </div>
+                </div>
 
-                  <Button
-                    onClick={handleBooking}
-                    disabled={isBooking}
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-6"
-                  >
-                    {isBooking ? "Processing Payment..." : "Proceed to Book"}
-                  </Button>
-                </motion.div>
-              )}
-            </div>
+                <Button
+                  onClick={handleBooking}
+                  disabled={isBooking}
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-6"
+                >
+                  {isBooking ? "Processing Payment..." : "Proceed to Book"}
+                </Button>
+              </motion.div>
+            )}
           </Card>
         </motion.div>
       </section>

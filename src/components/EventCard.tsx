@@ -51,11 +51,15 @@ const EventCard = ({ event, index = 0 }: EventCardProps) => {
           <div className="space-y-2 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-primary" />
-              <span>{formatDate(event.date)}</span>
+              <span>{formatDate(event.showTimes[0].date)}</span>
             </div>
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-primary" />
-              <span>{event.time}</span>
+              <span>
+                {event.showTimes.length > 1 
+                  ? `Multiple showtimes available` 
+                  : event.showTimes[0].times[0]}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-primary" />
