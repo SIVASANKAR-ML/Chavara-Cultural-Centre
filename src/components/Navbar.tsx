@@ -14,6 +14,7 @@ const Navbar = () => {
     { name: "Calendar", path: "/calendar" },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
+    { name: "Blog", path: "/blog" },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -92,4 +93,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default Navbar;
