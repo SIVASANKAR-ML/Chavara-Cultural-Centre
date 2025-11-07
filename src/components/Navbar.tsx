@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
 
@@ -53,6 +53,15 @@ const Navbar = () => {
                 )}
               </Link>
             ))}
+
+            {/* Profile / Login Icon */}
+            <Link
+              to="/login"
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+              title="Login"
+            >
+              <User className="h-6 w-6 text-muted-foreground hover:text-primary" />
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -86,6 +95,15 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
+
+            {/* Profile Icon inside Mobile Menu */}
+            <Link
+              to="/login"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 py-2 font-medium text-muted-foreground hover:text-primary transition-colors"
+            >
+              <User className="h-5 w-5" /> Login
+            </Link>
           </motion.div>
         )}
       </div>
@@ -93,4 +111,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default Navbar;
