@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
+import Events from "./pages/Events";
 import Calendar from "./pages/Calendar";
 import EventDetails from "./pages/EventDetails";
 import BookingConfirmation from "./pages/BookingConfirmation";
@@ -27,7 +28,7 @@ const App = () => (
           <main className="flex-1">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/events" element={<Home />} />
+              <Route path="/events" element={<Events />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/event/:eventId" element={<EventDetails />} />
               <Route path="/booking-confirmation/:bookingId" element={<BookingConfirmation />} />
