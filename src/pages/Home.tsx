@@ -51,8 +51,8 @@ const Home = () => {
             <Button
               size="lg"
               onClick={scrollToEvents}
-              variant="hero"
-              className="text-lg px-8 py-6"
+              variant="default"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-8 py-6"
             >
               Explore Events
               <ArrowRight className="ml-2 h-5 w-5" />
