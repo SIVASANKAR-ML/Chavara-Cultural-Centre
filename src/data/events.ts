@@ -101,7 +101,7 @@ export const upcomingEvents: Event[] = [
       { date: "2025-12-16", times: ["18:00"] },
       { date: "2025-12-17", times: ["16:00", "19:00"] }
     ],
-    image: "https://images.unsplash.com/photo-1604762524889-bcde1e9bef2b?w=800&h=600&fit=crop",
+    image: "https://thumbs.dreamstime.com/b/group-classical-odissi-dancers-performing-odissi-dance-stage-konark-temple-odisha-india-odissi-dance-also-known-as-155047464.jpg",
     category: "Dance",
     price: 500,
     totalSeats: 50,
@@ -115,7 +115,7 @@ export const upcomingEvents: Event[] = [
       { date: "2025-12-20", times: ["19:00"] },
       { date: "2025-12-21", times: ["17:00", "20:00"] }
     ],
-    image: "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&h=600&fit=crop",
+    image: "https://cdn-cms.orchidsinternationalschool.com/blog/Kerala%20Folk%20Songs.jpg",
     category: "Music",
     price: 400,
     totalSeats: 50,
@@ -130,7 +130,7 @@ export const upcomingEvents: Event[] = [
       { date: "2025-12-26", times: ["10:00", "14:00", "17:00"] },
       { date: "2025-12-27", times: ["10:00"] }
     ],
-    image: "https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?w=800&h=600&fit=crop",
+    image: "https://utsav.gov.in/public/uploads/event_cover_image/event_533/16576023091116776677.jpg",
     category: "Art",
     price: 200,
     totalSeats: 50,
@@ -144,7 +144,7 @@ export const upcomingEvents: Event[] = [
       { date: "2025-12-28", times: ["18:30", "21:00"] },
       { date: "2025-12-29", times: ["18:30"] }
     ],
-    image: "https://images.unsplash.com/photo-1598387181032-a3103a2db5b3?w=800&h=600&fit=crop",
+    image: "https://kerala.me/wp-content/uploads/2015/11/kerala-culture.jpg",
     category: "Theatre",
     price: 600,
     totalSeats: 50,
