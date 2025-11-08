@@ -40,12 +40,12 @@ const SeatSelector = ({ totalSeats, bookedSeats, onSeatsChange }: SeatSelectorPr
   const getSeatColor = (status: string) => {
     switch (status) {
       case 'booked':
-        return 'bg-destructive/80 cursor-not-allowed';
+        return 'bg-primary cursor-not-allowed';
       case 'selected':
-        return 'bg-primary hover:bg-primary/90 cursor-pointer';
+        return 'bg-accent hover:bg-accent/90 cursor-pointer';
       case 'available':
       default:
-        return 'bg-accent/40 hover:bg-primary/50 cursor-pointer';
+        return 'bg-green-500 hover:bg-green-600 cursor-pointer';
     }
   };
   
@@ -79,8 +79,8 @@ const SeatSelector = ({ totalSeats, bookedSeats, onSeatsChange }: SeatSelectorPr
                     className={cn(
                       "w-10 h-10 rounded-lg text-xs font-semibold transition-all",
                       getSeatColor(status),
-                      status === 'selected' && "text-primary-foreground",
-                      status === 'booked' && "text-destructive-foreground opacity-50"
+                      status === 'selected' && "text-accent-foreground",
+                      status === 'booked' && "text-primary-foreground opacity-70"
                     )}
                     title={`Seat ${seatId} - ${status}`}
                   >
@@ -96,15 +96,15 @@ const SeatSelector = ({ totalSeats, bookedSeats, onSeatsChange }: SeatSelectorPr
       {/* Legend */}
       <div className="flex flex-wrap gap-6 justify-center pt-6 border-t border-border">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded bg-accent/40" />
+          <div className="w-6 h-6 rounded bg-green-500" />
           <span className="text-sm text-muted-foreground">Available</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded bg-primary" />
+          <div className="w-6 h-6 rounded bg-accent" />
           <span className="text-sm text-muted-foreground">Selected</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded bg-destructive/80" />
+          <div className="w-6 h-6 rounded bg-primary" />
           <span className="text-sm text-muted-foreground">Booked</span>
         </div>
       </div>
