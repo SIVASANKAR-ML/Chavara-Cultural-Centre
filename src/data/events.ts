@@ -42,6 +42,14 @@ export interface Venue {
 
 }
 
+export interface Abouts {
+  id: string;
+  name: string;
+  title: string;
+  image: string;
+
+}
+
 export const venue: Venue[] = [
   {
     id: "ven-001",
@@ -197,4 +205,36 @@ export const reviews: Review[] = [
     comment: "An authentic cultural experience. The ambiance and attention to detail made it truly special.",
     date: "2025-07-30"
   }
+];
+
+
+export const Abouts: Abouts[] = [
+  {
+    id: "at-001",
+    name: "REV.FR.THOMAS CHATHAMPARAMBIL CMI",
+    title: "Prior General",
+    image: "https://www.chavaraculturalcentre.com/images/team/face_1.jpg",
+  },
+
+  {
+    id: "at-002",
+    name: "REV.FR.MARTIN MALLATH CMI",
+    title: "Chairman & Gen.Councilor for Edu.",
+    image: "https://www.chavaraculturalcentre.com/images/team/face_2.jpg",
+  },
+
+  {
+    id: "at-003",
+    name: "FR. BIJU VADAKKEL CMI",
+    title: "Director,Chavara Institute",
+    image: "https://www.chavaraculturalcentre.com/images/team/face_3.png",
+  },
+
+  {
+    id: "at-004",
+    name: "FR. ANIL PUTHUPARAMBIL CM",
+    title: "Director Chavara Cultural Centre",
+    image: "https://www.chavaraculturalcentre.com/images/team/face_4.png",
+  },
+ 
 ];
