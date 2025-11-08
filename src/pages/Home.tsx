@@ -1,49 +1,76 @@
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Play, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import EventCard from "@/components/EventCard";
-import VenueCard from "@/components/VenueCard";
-import { upcomingEvents, pastEvents, reviews,venue } from "@/data/events";
+import { upcomingEvents, pastEvents, reviews } from "@/data/events";
+
+const heroImages = [
+  "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1920&h=1080&fit=crop",
+  "https://img.freepik.com/premium-photo/party-event-decoration-asia-beautiful-decorations-cultural-program-wedding-decorations_343960-18475.jpg",
+  "https://kerala.me/wp-content/uploads/2015/11/kerala-culture.jpg",
+];
 
 const Home = () => {
+  const [current, setCurrent] = useState(0);
+
+  // Function to scroll to events section
   const scrollToEvents = () => {
     document.getElementById("upcoming-events")?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Auto-rotate hero images every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
+      {/* Hero Section with Image Carousel */}
       <section className="relative h-[70vh] min-h-[500px] flex items-center justify-center overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-gradient-hero opacity-90"
-          style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1920&h=1080&fit=crop')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundBlendMode: "multiply",
-          }}
-        />
-        
+        <AnimatePresence>
+          <motion.div
+            key={heroImages[current]}
+            className="absolute inset-0"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+            style={{
+              backgroundImage: `url('${heroImages[current]}')`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
+        </AnimatePresence>
+
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/50" />
+
+        {/* Hero Text */}
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="font-serif font-bold text-4xl md:text-6xl lg:text-7xl text-primary-foreground mb-6"
+            className="font-serif font-bold text-4xl md:text-6xl lg:text-7xl text-white mb-6"
           >
             Where Culture, Art, and Heritage Come Alive
           </motion.h1>
-          
+
           <motion.p
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-lg md:text-xl text-primary-foreground/90 mb-8 max-w-2xl mx-auto"
+            className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto"
           >
             Experience the richness of Kerala's cultural traditions through captivating performances, exhibitions, and events.
           </motion.p>
-          
+
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -53,12 +80,25 @@ const Home = () => {
               size="lg"
               onClick={scrollToEvents}
               variant="default"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-8 py-6"
+              className="bg-blue-600 text-white hover:bg-blue-700 text-lg px-8 py-6"
             >
               Explore Events
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </motion.div>
+        </div>
+
+        {/* Carousel Dots */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+          {heroImages.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrent(i)}
+              className={`w-3 h-3 rounded-full transition-all ${
+                current === i ? "bg-white" : "bg-white/50"
+              }`}
+            />
+          ))}
         </div>
       </section>
 
@@ -92,46 +132,18 @@ const Home = () => {
           className="text-center mt-12"
         >
           <Link to="/calendar">
-            <Button size="lg" variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            >
               View Full Calendar
             </Button>
           </Link>
         </motion.div>
       </section>
 
-      {/* Venues bookings
-      <section id="venues" className="container mx-auto px-4 py-20">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
-          <h2 className="font-serif font-bold text-3xl md:text-4xl text-foreground mb-4">
-            Venues
-          </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Discover our carefully curated selection of cultural performances and exhibitions
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {venue.map((venue, index) => (
-            <VenueCard key={venue.id} event={venue} index={index} />
-          ))}
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="text-center mt-12"
-        >
-        </motion.div>
-      </section> */}
-
-      {/* Previous Events Videos */}
+      {/* Past Events Section */}
       <section className="bg-muted/30 py-20">
         <div className="container mx-auto px-4">
           <motion.div
@@ -184,7 +196,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Reviews / Testimonials */}
+      {/* Reviews Section */}
       <section className="container mx-auto px-4 py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
