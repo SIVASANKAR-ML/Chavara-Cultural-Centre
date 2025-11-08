@@ -167,6 +167,7 @@ const Home = () => {
             </Button>
           </Link>
         </motion.div>
+        
       </section>
 
       {/* Past Events Section */}
