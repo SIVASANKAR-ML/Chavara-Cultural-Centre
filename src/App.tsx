@@ -11,6 +11,7 @@ import Home from "./pages/Home";
 import Events from "./pages/Events";
 import Calendar from "./pages/Calendar";
 import EventDetails from "./pages/EventDetails";
+import VenueDetails from "./pages/VenueDetails";
 import BookingConfirmation from "./pages/BookingConfirmation";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -38,6 +39,7 @@ const App = () => (
               <Route path="/events" element={<Events />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/event/:eventId" element={<EventDetails />} />
+              <Route path="/venue/:venueId" element={<VenueDetails />} />
               <Route
                 path="/booking-confirmation/:bookingId"
                 element={<BookingConfirmation />}
