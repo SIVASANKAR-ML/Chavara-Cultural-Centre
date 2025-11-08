@@ -3,7 +3,8 @@ import { ArrowRight, Play, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import EventCard from "@/components/EventCard";
-import { upcomingEvents, pastEvents, reviews } from "@/data/events";
+import VenueCard from "@/components/VenueCard";
+import { upcomingEvents, pastEvents, reviews,venue } from "@/data/events";
 
 const Home = () => {
   const scrollToEvents = () => {
@@ -97,6 +98,38 @@ const Home = () => {
           </Link>
         </motion.div>
       </section>
+
+      {/* Venues bookings
+      <section id="venues" className="container mx-auto px-4 py-20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12"
+        >
+          <h2 className="font-serif font-bold text-3xl md:text-4xl text-foreground mb-4">
+            Venues
+          </h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Discover our carefully curated selection of cultural performances and exhibitions
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {venue.map((venue, index) => (
+            <VenueCard key={venue.id} event={venue} index={index} />
+          ))}
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="text-center mt-12"
+        >
+        </motion.div>
+      </section> */}
 
       {/* Previous Events Videos */}
       <section className="bg-muted/30 py-20">

@@ -31,6 +31,58 @@ export interface PastEvent {
   description: string;
 }
 
+export interface Venue {
+  id: string;
+  name: string;
+  location: string;
+  image: string;
+  showTimes: ShowTime[];
+  capacity: string;
+  price: number;
+
+}
+
+export const venue: Venue[] = [
+  {
+    id: "ven-001",
+    name: "Main Auditorium",
+    location: "Chavara Cultural Center, Kochi",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Wien_-_Staatsoper%2C_Zuschauerraum_mit_B%C3%BChne.JPG/1200px-Wien_-_Staatsoper%2C_Zuschauerraum_mit_B%C3%BChne.JPG",
+    showTimes: [
+      { date: "2025-12-15", times: ["18:00", "20:30"] },
+      { date: "2025-12-16", times: ["18:00"] },
+      { date: "2025-12-17", times: ["16:00", "19:00"] }
+    ],
+    capacity: "50 Seats",
+    price: 40000
+  },
+  {
+    id: "ven-002",
+    name: "Open Air Theater",
+    location: "Chavara Cultural Center, Kochi",
+    image: "https://www.pricemyers.com/img/project_header/224/2560_x1440_2.jpg",
+    showTimes: [
+      { date: "2025-12-20", times: ["19:00"] },
+      { date: "2025-12-21", times: ["17:00", "20:00"] }
+    ],
+    capacity: "50 Seats",
+    price: 40000
+  },
+  {
+    id: "ven-003",
+    name: "Gallery Hall",
+    location: "Chavara Cultural Center, Kochi",
+    image: "https://www.explorebees.com/uploads/Durbar%20Hall%20Art%20Gallery%20(6).JPG",
+    showTimes: [
+      { date: "2025-12-25", times: ["10:00", "14:00"] },
+      { date: "2025-12-26", times: ["10:00", "14:00", "17:00"] },
+      { date: "2025-12-27", times: ["10:00"] }
+    ],
+    capacity: "50 Seats",
+    price: 25000
+  }
+];
+
 export const upcomingEvents: Event[] = [
   {
     id: "evt-001",
