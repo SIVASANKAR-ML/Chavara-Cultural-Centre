@@ -157,21 +157,21 @@ export const pastEvents: PastEvent[] = [
     id: "past-001",
     title: "Mohiniyattam Performance - October 2025",
     date: "2025-10-15",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    videoUrl: "https://www.youtube.com/embed/xUM9GVOxB_o",
     description: "A captivating performance of Mohiniyattam that enchanted our audience."
   },
   {
     id: "past-002",
     title: "Carnatic Music Concert - September 2025",
     date: "2025-09-20",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    videoUrl: "https://www.youtube.com/embed/Yn5XWJst_zc",
     description: "An evening of soulful Carnatic music by maestros."
   },
   {
     id: "past-003",
     title: "Heritage Arts Showcase - August 2025",
     date: "2025-08-10",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    videoUrl: "https://www.youtube.com/embed/zmoca-B1kTQ",
     description: "A celebration of Kerala's rich artistic heritage."
   }
 ];
