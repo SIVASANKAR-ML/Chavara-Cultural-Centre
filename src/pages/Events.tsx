@@ -49,14 +49,14 @@ const Events = () => {
         id: "demo-1",
         title: "Live Jazz Concert",
         description: "Smooth jazz session happening right now from NYC.",
-        image: "https://images.unsplash.com/photo-1504805572947-34fad45aed93?q=80&w=800",
+        image: "#",
         showTimes: [{ date: localYYYYMMDD, times: ["19:00"] }],
       } as EventType,
       {
         id: "demo-2",
         title: "Art & Culture Festival",
         description: "Experience live art performances.",
-        image: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=800",
+        image: "#",
         showTimes: [{ date: localYYYYMMDD, times: ["18:30"] }],
       } as EventType,
     ];

@@ -27,14 +27,18 @@ const Login: React.FC = () => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -40 }}
       transition={{ duration: 0.7, ease: "easeOut" }}
-      className="relative flex items-center justify-center min-h-screen bg-cover bg-center bg-no-repeat"
-      style={{
-        backgroundImage:
-          "url('https://www.timesindiatravels.com/wp-content/uploads/2017/09/Discover-Kerala-Tour.jpg')", // 🎨 Cultural arts theme
-      }}
+      className="relative h-[70vh] min-h-[500px] flex items-center justify-center overflow-hidden"
     >
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/50"></div>
+      <div
+        className="absolute inset-0 bg-gradient-hero opacity-90"
+        style={{
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1920&h=1080&fit=crop')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundBlendMode: "multiply",
+        }}
+      />
 
       {/* Animated Card */}
       <motion.div
@@ -43,7 +47,7 @@ const Login: React.FC = () => {
         transition={{ delay: 0.3, duration: 0.6 }}
         className="relative z-10 bg-white/90 backdrop-blur-sm shadow-2xl rounded-2xl p-10 w-full max-w-md"
       >
-        <h2 className="text-3xl font-bold text-center mb-6 text-red-900">Login</h2>
+        <h2 className="text-3xl font-bold text-center mb-6 text-primary">Login</h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
@@ -72,17 +76,14 @@ const Login: React.FC = () => {
             <div className="text-right mt-2">
               <Link
                 to="/forgot-password"
-                className="text-sm text-red-800 hover:text-red-600 transition-colors font-medium"
+                className="text-sm text-primary hover:text-primary/90 transition-colors font-medium"
               >
                 Forgot Password?
               </Link>
             </div>
           </div>
 
-          <Button
-            type="submit"
-            className="w-full bg-red-900 hover:bg-red-800 text-white font-semibold"
-          >
+          <Button type="submit" className="w-full">
             Sign In
           </Button>
         </form>
@@ -90,10 +91,7 @@ const Login: React.FC = () => {
         {/* Sign up link */}
         <p className="text-center text-sm text-gray-700 mt-6">
           Don’t have an account?{" "}
-          <Link
-            to="/signup"
-            className="font-semibold text-red-800 hover:text-red-600 transition-colors"
-          >
+          <Link to="/signup" className="font-semibold text-primary hover:text-primary/90 transition-colors">
             Sign up
           </Link>
         </p>
