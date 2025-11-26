@@ -213,28 +213,28 @@ export const Abouts: Abouts[] = [
     id: "at-001",
     name: "REV.FR.THOMAS CHATHAMPARAMBIL CMI",
     title: "Prior General",
-    image: "https://www.chavaraculturalcentre.com/images/team/face_1.jpg",
+    image: "#",
   },
 
   {
     id: "at-002",
     name: "REV.FR.MARTIN MALLATH CMI",
     title: "Chairman & Gen.Councilor for Edu.",
-    image: "https://www.chavaraculturalcentre.com/images/team/face_2.jpg",
+    image: "#",
   },
 
   {
     id: "at-003",
     name: "FR. BIJU VADAKKEL CMI",
     title: "Director,Chavara Institute",
-    image: "https://www.chavaraculturalcentre.com/images/team/face_3.png",
+    image: "#",
   },
 
   {
     id: "at-004",
     name: "FR. ANIL PUTHUPARAMBIL CM",
     title: "Director Chavara Cultural Centre",
-    image: "https://www.chavaraculturalcentre.com/images/team/face_4.png",
+    image: "#",
   },
  
 ];
