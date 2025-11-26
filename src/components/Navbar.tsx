@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Menu, X, User } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
+import logo from "@/assets/logo.png";
 
 const Navbar = () => {
   const location = useLocation();
@@ -25,7 +26,13 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-3">
+            <motion.img
+              src={logo}
+              alt="Chavara Cultural Center Logo"
+              className="h-10 w-10 md:h-12 md:w-12"
+              whileHover={{ scale: 1.05 }}
+            />
             <motion.div
               whileHover={{ scale: 1.05 }}
               className="text-xl font-serif font-bold text-primary md:text-2xl"
