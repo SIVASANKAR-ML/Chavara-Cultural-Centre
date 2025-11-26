@@ -40,12 +40,12 @@ const SeatSelector = ({ totalSeats, bookedSeats, onSeatsChange }: SeatSelectorPr
   const getSeatColor = (status: string) => {
     switch (status) {
       case 'booked':
-        return 'bg-primary cursor-not-allowed';
+        return 'bg-muted/40 text-muted-foreground cursor-not-allowed border-2 border-muted';
       case 'selected':
-        return 'bg-accent hover:bg-accent/90 cursor-pointer';
+        return 'bg-green-500 hover:bg-green-600 cursor-pointer border-2 border-green-600 text-white';
       case 'available':
       default:
-        return 'bg-green-500 hover:bg-green-600 cursor-pointer';
+        return 'bg-background hover:bg-green-50 cursor-pointer border-2 border-green-500 text-green-600';
     }
   };
   
@@ -77,10 +77,8 @@ const SeatSelector = ({ totalSeats, bookedSeats, onSeatsChange }: SeatSelectorPr
                     onClick={() => handleSeatClick(seatId)}
                     disabled={status === 'booked'}
                     className={cn(
-                      "w-10 h-10 rounded-lg text-xs font-semibold transition-all",
-                      getSeatColor(status),
-                      status === 'selected' && "text-accent-foreground",
-                      status === 'booked' && "text-primary-foreground opacity-70"
+                      "w-10 h-10 rounded text-xs font-semibold transition-all",
+                      getSeatColor(status)
                     )}
                     title={`Seat ${seatId} - ${status}`}
                   >
@@ -96,15 +94,15 @@ const SeatSelector = ({ totalSeats, bookedSeats, onSeatsChange }: SeatSelectorPr
       {/* Legend */}
       <div className="flex flex-wrap gap-6 justify-center pt-6 border-t border-border">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded bg-green-500" />
+          <div className="w-6 h-6 rounded bg-background border-2 border-green-500" />
           <span className="text-sm text-muted-foreground">Available</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded bg-accent" />
+          <div className="w-6 h-6 rounded bg-green-500 border-2 border-green-600" />
           <span className="text-sm text-muted-foreground">Selected</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded bg-primary" />
+          <div className="w-6 h-6 rounded bg-muted/40 border-2 border-muted" />
           <span className="text-sm text-muted-foreground">Booked</span>
         </div>
       </div>
