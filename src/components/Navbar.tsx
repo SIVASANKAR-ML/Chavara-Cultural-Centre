@@ -35,8 +35,7 @@ const Navbar = () => {
             />
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="text-xl font-serif font-bold text-primary md:text-2xl"
-            >
+              className="text-xl font-roboto font-medium text-primary md:text-2xl">
               Chavara Cultural Center
             </motion.div>
           </Link>
