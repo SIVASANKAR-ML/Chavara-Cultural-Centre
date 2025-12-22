@@ -16,7 +16,7 @@ import BookingConfirmation from "./pages/BookingConfirmation";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
-import Blog from "./pages/Blog";
+
 import Login from "./pages/Login";      // ✅ Added login page
 import Signup from "./pages/Signup";    // ✅ Added signup page
 
@@ -46,7 +46,7 @@ const App = () => (
               />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/blog" element={<Blog />} />
+              
 
               {/* ✅ Authentication routes */}
               <Route path="/login" element={<Login />} />
