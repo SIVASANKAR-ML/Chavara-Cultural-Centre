@@ -1,129 +1,135 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface SeatSelectorProps {
-  totalSeats: number;
   bookedSeats: string[];
   onSeatsChange: (seats: string[]) => void;
 }
 
-const SeatSelector = ({ totalSeats, bookedSeats, onSeatsChange }: SeatSelectorProps) => {
+/**
+ * EXACT AUDITORIUM STRUCTURE
+ * (matches your image logic)
+ */
+const SEAT_MAP: Record<
+  string,
+  { left: number[]; right: number[] }
+> = {
+    A: { left: [     1,2,3,4,5], right: [6,7,8,9,10,11,12,13,14] },
+
+  B: { left: range(1,12), right: range(13,24) },
+  C: { left: range(1,12), right: range(13,24) },
+  D: { left: range(1,12), right: range(13,24) },
+  E: { left: range(1,12), right: range(13,24) },
+  F: { left: range(1,12), right: range(13,24) },
+  G: { left: range(1,12), right: range(13,24) },
+  H: { left: range(1,12), right: range(13,24) },
+  I: { left: range(1,12), right: range(13,24) },
+  J: { left: range(1,12), right: range(13,24) },
+  K: { left: range(1,12), right: range(13,24) },
+  L: { left: range(1,12), right: range(13,24) },
+  M: { left: range(1,12), right: range(13,24) },
+  N: { left: range(1,12), right: range(13,24) },
+  O: { left: range(1,12), right: range(13,24) },
+  P: { left: range(1,12), right: range(13,24) },
+  Q: { left: range(1,12), right: range(13,24) },
+  R: { left: range(1,12), right: range(13,24) },
+  S: { left: range(1,12), right: range(13,24) },
+};
+
+function range(start: number, end: number) {
+  return Array.from({ length: end - start + 1 }, (_, i) => i + start);
+}
+
+const SeatSelector = ({ bookedSeats, onSeatsChange }: SeatSelectorProps) => {
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
-  
-  const rows = 5; // A-E
-  const seatsPerRow = Math.ceil(totalSeats / rows);
-  
-  const getSeatId = (row: number, col: number) => {
-    const rowLetter = String.fromCharCode(65 + row); // A, B, C, D, E
-    return `${rowLetter}${col + 1}`;
-  };
-  
-  const handleSeatClick = (seatId: string) => {
-    if (bookedSeats.includes(seatId)) return; // Can't select booked seats
-    
+
+  const toggleSeat = (seatId: string) => {
+    if (bookedSeats.includes(seatId)) return;
+
     setSelectedSeats(prev => {
-      const newSeats = prev.includes(seatId)
+      const updated = prev.includes(seatId)
         ? prev.filter(s => s !== seatId)
         : [...prev, seatId];
-      onSeatsChange(newSeats);
-      return newSeats;
+
+      onSeatsChange(updated);
+      return updated;
     });
   };
-  
-  const getSeatStatus = (seatId: string) => {
-    if (bookedSeats.includes(seatId)) return 'booked';
-    if (selectedSeats.includes(seatId)) return 'selected';
-    return 'available';
+
+  const seatStatus = (seatId: string) => {
+    if (bookedSeats.includes(seatId)) return "booked";
+    if (selectedSeats.includes(seatId)) return "selected";
+    return "available";
   };
-  
-  const getSeatColor = (status: string) => {
-    switch (status) {
-      case 'booked':
-        return 'bg-muted/40 text-muted-foreground cursor-not-allowed border-2 border-muted';
-      case 'selected':
-        return 'bg-green-500 hover:bg-green-600 cursor-pointer border-2 border-green-600 text-white';
-      case 'available':
-      default:
-        return 'bg-background hover:bg-green-50 cursor-pointer border-2 border-green-500 text-green-600';
-    }
-  };
-  
+
   return (
-    <div className="space-y-6">
-      {/* Screen */}
-      <div className="flex flex-col items-center gap-2 mb-8">
-        <div className="w-full max-w-2xl h-2 bg-gradient-to-r from-transparent via-muted to-transparent" />
-        <p className="text-sm text-muted-foreground">Screen</p>
+    <div className="space-y-8">
+
+      {/* SCREEN */}
+      <div className="text-center">
+        <div className="mx-auto h-2 max-w-3xl bg-gradient-to-r from-transparent via-muted to-transparent" />
+        <p className="text-sm text-muted-foreground mt-1">Screen</p>
       </div>
-      
-      {/* Seats Grid */}
-      <div className="space-y-3">
-        {Array.from({ length: rows }).map((_, rowIndex) => (
-          <div key={rowIndex} className="flex items-center justify-center gap-2">
-            <span className="w-6 text-center font-semibold text-muted-foreground">
-              {String.fromCharCode(65 + rowIndex)}
-            </span>
-            <div className="flex gap-2 flex-wrap justify-center">
-              {Array.from({ length: seatsPerRow }).map((_, colIndex) => {
-                const seatId = getSeatId(rowIndex, colIndex);
-                const status = getSeatStatus(seatId);
-                
-                return (
-                  <motion.button
-                    key={seatId}
-                    whileHover={status !== 'booked' ? { scale: 1.1 } : {}}
-                    whileTap={status !== 'booked' ? { scale: 0.95 } : {}}
-                    onClick={() => handleSeatClick(seatId)}
-                    disabled={status === 'booked'}
-                    className={cn(
-                      "w-10 h-10 rounded text-xs font-semibold transition-all",
-                      getSeatColor(status)
-                    )}
-                    title={`Seat ${seatId} - ${status}`}
-                  >
-                    {colIndex + 1}
-                  </motion.button>
-                );
+
+      {/* SEATS */}
+      <div>
+        {Object.entries(SEAT_MAP).map(([row, blocks]) => (
+          <div key={row} className={`flex justify-center items-center gap-4 ${row === 'J' ? 'mb-8' : 'mb-3'}`}>
+
+            {/* LEFT ROW LABEL */}
+            <span className="w-5 text-right text-muted-foreground">{row}</span>
+
+            {/* LEFT BLOCK */}
+            <div className="flex gap-2">
+              {blocks.left.map(num => {
+                const seatId = `${row}${num}`;
+                return Seat(seatId);
               })}
             </div>
+
+            {/* AISLE */}
+            <div className="w-10" />
+
+            {/* RIGHT BLOCK */}
+            <div className="flex gap-2">
+              {blocks.right.map(num => {
+                const seatId = `${row}${num}`;
+                return Seat(seatId);
+              })}
+            </div>
+
+            {/* RIGHT ROW LABEL */}
+            <span className="w-5 text-left text-muted-foreground">{row}</span>
           </div>
         ))}
       </div>
-      
-      {/* Legend */}
-      <div className="flex flex-wrap gap-6 justify-center pt-6 border-t border-border">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded bg-background border-2 border-green-500" />
-          <span className="text-sm text-muted-foreground">Available</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded bg-green-500 border-2 border-green-600" />
-          <span className="text-sm text-muted-foreground">Selected</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded bg-muted/40 border-2 border-muted" />
-          <span className="text-sm text-muted-foreground">Booked</span>
-        </div>
-      </div>
-      
-      {/* Selected Seats Summary */}
-      {selectedSeats.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-4 bg-primary/10 rounded-lg border border-primary/20"
-        >
-          <p className="font-semibold text-foreground">
-            Selected Seats: <span className="text-primary">{selectedSeats.join(', ')}</span>
-          </p>
-          <p className="text-sm text-muted-foreground mt-1">
-            Total: {selectedSeats.length} seat(s)
-          </p>
-        </motion.div>
-      )}
     </div>
   );
+
+  function Seat(seatId: string) {
+    const status = seatStatus(seatId);
+
+    return (
+      <motion.button
+        key={seatId}
+        whileHover={status !== "booked" ? { scale: 1.1 } : {}}
+        whileTap={status !== "booked" ? { scale: 0.95 } : {}}
+        disabled={status === "booked"}
+        onClick={() => toggleSeat(seatId)}
+        className={cn(
+  "w-7 h-7 sm:w-9 sm:h-9 rounded-full text-[10px] sm:text-xs border font-semibold",
+  status === "booked" && "bg-muted/40 border-muted text-muted-foreground",
+  status === "selected" && "bg-green-500 text-white border-green-600",
+  status === "available" &&
+    "border-green-500 text-green-600 hover:bg-green-50"
+)}
+
+      >
+        {seatId.slice(1)}
+      </motion.button>
+    );
+  }
 };
 
 export default SeatSelector;
