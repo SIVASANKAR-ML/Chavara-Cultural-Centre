@@ -3,6 +3,8 @@ export interface ShowTime {
   times: string[];
 }
 
+// comment this after the api reviews
+
 export interface Event {
   id: string;
   title: string;
@@ -50,6 +52,8 @@ export interface Abouts {
 
 }
 
+// Remove the venue interface if not needed elsewhere
+
 export const venue: Venue[] = [
   {
     id: "ven-001",
@@ -90,6 +94,8 @@ export const venue: Venue[] = [
     price: 25000
   }
 ];
+
+// ######################################################################################
 
 export const upcomingEvents: Event[] = [
   {
