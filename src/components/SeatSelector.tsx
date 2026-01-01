@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface SeatSelectorProps {
+  totalSeats?: number;
   bookedSeats: string[];
   onSeatsChange: (seats: string[]) => void;
 }
@@ -37,11 +38,20 @@ function range(start: number, end: number) {
   return Array.from({ length: end - start + 1 }, (_, i) => i + start);
 }
 
-const SeatSelector = ({ bookedSeats, onSeatsChange }: SeatSelectorProps) => {
+const SeatSelector = ({ totalSeats, bookedSeats, onSeatsChange }: SeatSelectorProps) => {
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
 
   const toggleSeat = (seatId: string) => {
     if (bookedSeats.includes(seatId)) return;
+    const total = totalSeats ?? Object.values(SEAT_MAP).reduce((acc, cur) => acc + cur.left.length + cur.right.length, 0);
+    const remaining = Math.max(0, total - bookedSeats.length - selectedSeats.length);
+    // If trying to select a new seat but no remaining capacity, prevent it
+    if (!selectedSeats.includes(seatId) && remaining <= 0) {
+      // Simple user feedback
+      // eslint-disable-next-line no-alert
+      alert("No more seats available for this show.");
+      return;
+    }
     setSelectedSeats((prev) => {
       const updated = prev.includes(seatId)
         ? prev.filter((s) => s !== seatId)

@@ -5,7 +5,10 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import EventCard from "@/components/EventCard";
 import VenueCard from "@/components/VenueCard";
-import { upcomingEvents, pastEvents, reviews, venue } from "@/data/events";
+// Removed upcomingEvents from this import
+import { pastEvents, reviews, venue } from "@/data/events";
+// Added API imports
+import { fetchEvents, ChavaraEvent } from "@/services/api";
 
 const heroImages = [
   "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1920&h=1080&fit=crop",
@@ -13,7 +16,6 @@ const heroImages = [
   "https://kerala.me/wp-content/uploads/2015/11/kerala-culture.jpg",
 ];
 
-// Rotating hero dialogues (lines that change below the main title)
 const heroDialogues = [
   "Experience the richness of Kerala’s cultural traditions through captivating performances, exhibitions, and events.",
   "Where every rhythm, color, and dance narrates a story of heritage.",
@@ -24,13 +26,50 @@ const heroDialogues = [
 const Home = () => {
   const [currentImage, setCurrentImage] = useState(0);
   const [currentDialogue, setCurrentDialogue] = useState(0);
+  
+  // NEW: State for real backend events
+  const [events, setEvents] = useState<ChavaraEvent[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Scroll to events section
+  // UPDATED: Fetching and filtering logic based on Schedules
+  useEffect(() => {
+    const getEvents = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchEvents();
+        
+        // --- START FILTER LOGIC ---
+        const now = new Date();
+        // Get current date in YYYY-MM-DD format
+        const todayStr = now.toLocaleDateString('en-CA'); 
+        // Get current time in HH:mm:ss format
+        const currentTimeStr = now.toTimeString().split(' ')[0];
+
+        const upcomingFiltered = data.filter(event => {
+          // Check if event has at least one schedule in the future
+          return event.schedules?.some(sch => {
+            if (sch.show_date > todayStr) return true;
+            if (sch.show_date === todayStr) return sch.show_time >= currentTimeStr;
+            return false;
+          });
+        });
+        // --- END FILTER LOGIC ---
+
+        // Show only the first 4 upcoming filtered events
+        setEvents(upcomingFiltered.slice(0, 4));
+      } catch (error) {
+        console.error("Error fetching home events:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getEvents();
+  }, []);
+
   const scrollToEvents = () => {
     document.getElementById("upcoming-events")?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Auto-rotate hero background images every 6s
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % heroImages.length);
@@ -38,7 +77,6 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-rotate hero dialogues every 3s
   useEffect(() => {
     const dialogueInterval = setInterval(() => {
       setCurrentDialogue((prev) => (prev + 1) % heroDialogues.length);
@@ -66,10 +104,8 @@ const Home = () => {
           />
         </AnimatePresence>
 
-        {/* Overlay */}
         <div className="absolute inset-0 bg-black/50" />
 
-        {/* Hero Text */}
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
@@ -80,7 +116,6 @@ const Home = () => {
             Where Culture, Art, and Heritage Come Alive
           </motion.h1>
 
-          {/* Animated Dialogue */}
           <div className="h-24 flex items-center justify-center">
             <AnimatePresence mode="wait">
               <motion.p
@@ -113,7 +148,6 @@ const Home = () => {
           </motion.div>
         </div>
 
-        {/* Carousel Dots */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
           {heroImages.map((_, i) => (
             <button
@@ -128,7 +162,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Upcoming Events */}
+      {/* Upcoming Events - CONNECTED TO BACKEND */}
       <section id="upcoming-events" className="container mx-auto px-4 py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -146,9 +180,20 @@ const Home = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {upcomingEvents.map((event, index) => (
-            <EventCard key={event.id} event={event} index={index} />
-          ))}
+          {isLoading ? (
+            // Loading Skeletons
+            [...Array(4)].map((_, i) => (
+              <div key={i} className="h-80 bg-muted animate-pulse rounded-lg" />
+            ))
+          ) : events.length > 0 ? (
+            events.map((event, index) => (
+              <EventCard key={event.id} event={event} index={index} />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-10 text-muted-foreground">
+              No upcoming events found.
+            </div>
+          )}
         </div>
 
         <motion.div
@@ -157,7 +202,7 @@ const Home = () => {
           viewport={{ once: true }}
           className="text-center mt-12"
         >
-          <Link to="/calendar">
+          <Link to="/events">
             <Button
               size="lg"
               variant="outline"
@@ -167,10 +212,9 @@ const Home = () => {
             </Button>
           </Link>
         </motion.div>
-        
       </section>
 
-      {/* Past Events Section */}
+      {/* Past Events Section - Mock Data remains */}
       <section className="bg-muted/30 py-20">
         <div className="container mx-auto px-4">
           <motion.div
@@ -223,7 +267,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Reviews Section */}
+      {/* Reviews Section - Mock Data remains */}
       <section className="container mx-auto px-4 py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -280,7 +324,7 @@ const Home = () => {
             <p className="text-primary-foreground/90 text-lg mb-8 max-w-2xl mx-auto">
               Check our calendar and book your seats for upcoming cultural events
             </p>
-            <Link to="/calendar">
+            <Link to="/events">
               <Button size="lg" variant="hero" className="text-lg px-8 py-6">
                 Check Upcoming Events
                 <ArrowRight className="ml-2 h-5 w-5" />

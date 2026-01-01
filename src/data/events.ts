@@ -98,64 +98,64 @@ export const venue: Venue[] = [
 // ######################################################################################
 
 export const upcomingEvents: Event[] = [
-  {
-    id: "evt-001",
-    title: "Classical Bharatanatyam Performance",
-    description: "Experience the grace and elegance of traditional Bharatanatyam dance by renowned artists from Kerala. A mesmerizing evening of classical Indian dance.",
-    showTimes: [
-      { date: "2025-12-15", times: ["18:00", "20:30"] },
-      { date: "2025-12-16", times: ["18:00"] },
-      { date: "2025-12-17", times: ["16:00", "19:00"] }
-    ],
-    image: "https://thumbs.dreamstime.com/b/group-classical-odissi-dancers-performing-odissi-dance-stage-konark-temple-odisha-india-odissi-dance-also-known-as-155047464.jpg",
-    category: "Dance",
-    price: 500,
-    totalSeats: 50,
-    venue: "Main Auditorium"
-  },
-  {
-    id: "evt-002",
-    title: "Kerala Folk Music Festival",
-    description: "Immerse yourself in the rich tapestry of Kerala's folk music traditions. Featuring authentic instruments and celebrated folk musicians.",
-    showTimes: [
-      { date: "2025-12-20", times: ["19:00"] },
-      { date: "2025-12-21", times: ["17:00", "20:00"] }
-    ],
-    image: "https://cdn-cms.orchidsinternationalschool.com/blog/Kerala%20Folk%20Songs.jpg",
-    category: "Music",
-    price: 400,
-    totalSeats: 50,
-    venue: "Open Air Theater"
-  },
-  {
-    id: "evt-003",
-    title: "Contemporary Art Exhibition",
-    description: "Explore the intersection of tradition and modernity through stunning contemporary artworks by local and national artists.",
-    showTimes: [
-      { date: "2025-12-25", times: ["10:00", "14:00"] },
-      { date: "2025-12-26", times: ["10:00", "14:00", "17:00"] },
-      { date: "2025-12-27", times: ["10:00"] }
-    ],
-    image: "https://utsav.gov.in/public/uploads/event_cover_image/event_533/16576023091116776677.jpg",
-    category: "Art",
-    price: 200,
-    totalSeats: 50,
-    venue: "Gallery Hall"
-  },
-  {
-    id: "evt-004",
-    title: "Traditional Kathakali Theatre",
-    description: "Witness the elaborate costumes and dramatic storytelling of Kathakali, one of Kerala's most iconic classical dance-drama forms.",
-    showTimes: [
-      { date: "2025-12-28", times: ["18:30", "21:00"] },
-      { date: "2025-12-29", times: ["18:30"] }
-    ],
-    image: "https://kerala.me/wp-content/uploads/2015/11/kerala-culture.jpg",
-    category: "Theatre",
-    price: 600,
-    totalSeats: 50,
-    venue: "Main Auditorium"
-  }
+  // {
+  //   id: "evt-001",
+  //   title: "Classical Bharatanatyam Performance",
+  //   description: "Experience the grace and elegance of traditional Bharatanatyam dance by renowned artists from Kerala. A mesmerizing evening of classical Indian dance.",
+  //   showTimes: [
+  //     { date: "2025-12-15", times: ["18:00", "20:30"] },
+  //     { date: "2025-12-16", times: ["18:00"] },
+  //     { date: "2025-12-17", times: ["16:00", "19:00"] }
+  //   ],
+  //   image: "https://thumbs.dreamstime.com/b/group-classical-odissi-dancers-performing-odissi-dance-stage-konark-temple-odisha-india-odissi-dance-also-known-as-155047464.jpg",
+  //   category: "Dance",
+  //   price: 500,
+  //   totalSeats: 50,
+  //   venue: "Main Auditorium"
+  // },
+  // {
+  //   id: "evt-002",
+  //   title: "Kerala Folk Music Festival",
+  //   description: "Immerse yourself in the rich tapestry of Kerala's folk music traditions. Featuring authentic instruments and celebrated folk musicians.",
+  //   showTimes: [
+  //     { date: "2025-12-20", times: ["19:00"] },
+  //     { date: "2025-12-21", times: ["17:00", "20:00"] }
+  //   ],
+  //   image: "https://cdn-cms.orchidsinternationalschool.com/blog/Kerala%20Folk%20Songs.jpg",
+  //   category: "Music",
+  //   price: 400,
+  //   totalSeats: 50,
+  //   venue: "Open Air Theater"
+  // },
+  // {
+  //   id: "evt-003",
+  //   title: "Contemporary Art Exhibition",
+  //   description: "Explore the intersection of tradition and modernity through stunning contemporary artworks by local and national artists.",
+  //   showTimes: [
+  //     { date: "2025-12-25", times: ["10:00", "14:00"] },
+  //     { date: "2025-12-26", times: ["10:00", "14:00", "17:00"] },
+  //     { date: "2025-12-27", times: ["10:00"] }
+  //   ],
+  //   image: "https://utsav.gov.in/public/uploads/event_cover_image/event_533/16576023091116776677.jpg",
+  //   category: "Art",
+  //   price: 200,
+  //   totalSeats: 50,
+  //   venue: "Gallery Hall"
+  // },
+  // {
+  //   id: "evt-004",
+  //   title: "Traditional Kathakali Theatre",
+  //   description: "Witness the elaborate costumes and dramatic storytelling of Kathakali, one of Kerala's most iconic classical dance-drama forms.",
+  //   showTimes: [
+  //     { date: "2025-12-28", times: ["18:30", "21:00"] },
+  //     { date: "2025-12-29", times: ["18:30"] }
+  //   ],
+  //   image: "https://kerala.me/wp-content/uploads/2015/11/kerala-culture.jpg",
+  //   category: "Theatre",
+  //   price: 600,
+  //   totalSeats: 50,
+  //   venue: "Main Auditorium"
+  // }
 ];
 
 export const pastEvents: PastEvent[] = [
