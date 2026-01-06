@@ -5,32 +5,61 @@ import { QRCodeSVG } from "qrcode.react";
 import { CheckCircle, Calendar, Clock, MapPin, Ticket, Download, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { getBookingDetails } from "@/services/api";
+import { toast } from "sonner";
 
 interface Booking {
-  id: string;
-  eventId: string;
-  eventTitle: string;
-  eventDate: string;
-  eventTime: string;
+  booking_id: string;
+  customer_name: string;
+  phone: string;
+  email: string;
+  event_title: string;
+  event_date: string;
+  event_time: string;
   seats: string[];
-  totalAmount: number;
-  bookingDate: string;
+  total_amount: number;
+  booking_date: string;
+  status: string;
 }
 
 const BookingConfirmation = () => {
   const { bookingId } = useParams();
   const navigate = useNavigate();
   const [booking, setBooking] = useState<Booking | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load booking from localStorage
-    const bookingsData = localStorage.getItem("bookings");
-    if (bookingsData) {
-      const bookings: Booking[] = JSON.parse(bookingsData);
-      const foundBooking = bookings.find(b => b.id === bookingId);
-      setBooking(foundBooking || null);
-    }
+    const loadBooking = async () => {
+      if (!bookingId) return;
+      
+      try {
+        console.log('Loading booking:', bookingId);
+        const bookingData = await getBookingDetails(bookingId);
+        console.log('Booking data received:', bookingData);
+        if (bookingData) {
+          setBooking(bookingData);
+        } else {
+          console.log('No booking data returned');
+          toast.error("Booking not found");
+        }
+      } catch (error) {
+        console.error("Failed to load booking:", error);
+        toast.error("Failed to load booking details");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadBooking();
   }, [bookingId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="animate-pulse text-primary font-bold">Loading booking details...</p>
+      </div>
+    );
+  }
 
   if (!booking) {
     return (
@@ -54,10 +83,10 @@ const BookingConfirmation = () => {
   };
 
   const qrData = JSON.stringify({
-    bookingId: booking.id,
-    eventTitle: booking.eventTitle,
+    bookingId: booking.booking_id,
+    eventTitle: booking.event_title,
     seats: booking.seats,
-    date: booking.eventDate,
+    date: booking.event_date,
   });
 
   const handleDownloadQR = () => {
@@ -79,7 +108,7 @@ const BookingConfirmation = () => {
         const pngUrl = canvas.toDataURL("image/png");
         const downloadLink = document.createElement("a");
         downloadLink.href = pngUrl;
-        downloadLink.download = `ticket-${booking.id}.png`;
+        downloadLink.download = `ticket-${booking.booking_id}.png`;
         downloadLink.click();
       }
       URL.revokeObjectURL(url);
@@ -120,12 +149,12 @@ const BookingConfirmation = () => {
               <div className="space-y-6">
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Booking ID</p>
-                  <p className="font-mono font-bold text-xl text-primary">{booking.id}</p>
+                  <p className="font-mono font-bold text-xl text-primary">{booking.booking_id}</p>
                 </div>
 
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Event</p>
-                  <p className="font-serif font-bold text-xl text-foreground">{booking.eventTitle}</p>
+                  <p className="font-serif font-bold text-xl text-foreground">{booking.event_title}</p>
                 </div>
 
                 <div className="space-y-4">
@@ -135,7 +164,7 @@ const BookingConfirmation = () => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Date</p>
-                      <p className="font-semibold text-foreground">{formatDate(booking.eventDate)}</p>
+                      <p className="font-semibold text-foreground">{formatDate(booking.event_date)}</p>
                     </div>
                   </div>
 
@@ -145,7 +174,7 @@ const BookingConfirmation = () => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Time</p>
-                      <p className="font-semibold text-foreground">{booking.eventTime}</p>
+                      <p className="font-semibold text-foreground">{booking.event_time}</p>
                     </div>
                   </div>
 
@@ -163,7 +192,7 @@ const BookingConfirmation = () => {
                 <div className="pt-4 border-t border-border">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Total Amount Paid</span>
-                    <span className="font-bold text-2xl text-primary">₹{booking.totalAmount}</span>
+                    <span className="font-bold text-2xl text-primary">₹{booking.total_amount}</span>
                   </div>
                 </div>
               </div>

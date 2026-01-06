@@ -220,57 +220,45 @@ const EventDetails = () => {
             {/* Show Time Selection - Now uses REAL data from Event Schedule */}
             <div className="border-t border-border pt-8 mb-8">
               {transformedShowTimes.length > 0 ? (
-                <ShowTimeSelector
-                  showTimes={transformedShowTimes}
-                  selectedDate={selectedDate}
-                  selectedTime={selectedTime}
-                  onDateSelect={(date) => {
-                    setSelectedDate(date);
-                    setSelectedTime(null);
-                    setSelectedSeats([]);
-                  }}
-                  onTimeSelect={setSelectedTime}
-                />
+                <div>
+                  <h2 className="font-serif font-bold text-2xl text-foreground mb-6 flex items-center gap-2">
+                    <Clock className="h-6 w-6 text-primary" />
+                    Select Show Time
+                  </h2>
+                  <ShowTimeSelector
+                    showTimes={transformedShowTimes}
+                    selectedDate={selectedDate}
+                    selectedTime={selectedTime}
+                    onDateSelect={(date) => {
+                      setSelectedDate(date);
+                      setSelectedTime(null);
+                    }}
+                    onTimeSelect={setSelectedTime}
+                  />
+                  
+                  {selectedDate && selectedTime && (
+                    <div className="mt-6 text-center">
+                      <Button 
+                        size="lg" 
+                        onClick={() => {
+                          const schedule = event.schedules?.find(s => 
+                            s.show_date === selectedDate && s.show_time === selectedTime
+                          );
+                          if (schedule) {
+                            navigate(`/seat-booking/${eventId}/${schedule.name}`);
+                          }
+                        }}
+                        className="px-8 py-3"
+                      >
+                        Select Seats
+                      </Button>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <p className="text-center text-muted-foreground py-4">No schedules available for this event yet.</p>
               )}
             </div>
-
-            {/* Seat Selection - Remains unchanged */}
-            {selectedDate && selectedTime && (
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="border-t border-border pt-8">
-                <h2 className="font-serif font-bold text-2xl text-foreground mb-6 flex items-center gap-2">
-                  <Users className="h-6 w-6 text-primary" />
-                  Select Your Seats
-                </h2>
-                <SeatSelector
-                  totalSeats={event.maxCapacity || 100} // Use real capacity from Frappe
-                  bookedSeats={bookedSeats}
-                  onSeatsChange={setSelectedSeats}
-                />
-              </motion.div>
-            )}
-
-            {/* Booking Summary - Remains unchanged */}
-            {selectedSeats.length > 0 && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-8 p-6 bg-primary/5 rounded-lg border border-primary/20">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Seats</p>
-                    <p className="text-2xl font-bold text-foreground">{selectedSeats.length}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm text-muted-foreground">Total Amount</p>
-                    <p className="text-2xl font-bold text-primary">
-                      ₹{selectedSeats.length * (event.price || 0)}
-                    </p>
-                  </div>
-                </div>
-                <button onClick={handleBooking} disabled={isBooking} className="w-full bg-primary hover:bg-primary/90 text-white rounded-lg font-bold text-lg py-6">
-                  {isBooking ? "Processing Payment..." : "Proceed to Book"}
-                </button>
-              </motion.div>
-            )}
           </Card>
         </motion.div>
       </section>

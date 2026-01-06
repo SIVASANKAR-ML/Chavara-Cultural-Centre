@@ -19,6 +19,8 @@ import NotFound from "./pages/NotFound";
 
 import Login from "./pages/Login";      // ✅ Added login page
 import Signup from "./pages/Signup";    // ✅ Added signup page
+import TicketVerification from "./pages/TicketVerification";
+import SeatBooking from "./pages/SeatBooking";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +41,7 @@ const App = () => (
               <Route path="/events" element={<Events />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/event/:eventId" element={<EventDetails />} />
+              <Route path="/seat-booking/:eventId/:scheduleId" element={<SeatBooking />} />
               {/* <Route path="/venue/:venueId" element={<VenueDetails />} /> */}
               <Route
                 path="/booking-confirmation/:bookingId"
@@ -51,6 +54,9 @@ const App = () => (
               {/* ✅ Authentication routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              
+              {/* ✅ QR Scanner route */}
+              <Route path="/verify" element={<TicketVerification />} />
 
               {/* Catch-all route */}
               <Route path="*" element={<NotFound />} />

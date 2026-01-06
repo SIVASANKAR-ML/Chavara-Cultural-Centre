@@ -4,46 +4,17 @@ import { Menu, X, User, Scan } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import logo from "@/assets/logo.png";
-import { Html5QrcodeScanner } from "html5-qrcode";
 
 const Navbar = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [scannerOpen, setScannerOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  useEffect(() => {
-    if (!scannerOpen) return;
-
-    const scanner = new Html5QrcodeScanner(
-      "qr-reader",
-      {
-        fps: 10,
-        qrbox: { width: 250, height: 250 },
-        rememberLastUsedCamera: true,
-      },
-      false
-    );
-
-    scanner.render(
-      (decodedText) => {
-        alert(`Scanned: ${decodedText}`);
-        scanner.clear();
-        setScannerOpen(false);
-      },
-      () => {}
-    );
-
-    return () => {
-      scanner.clear().catch(() => {});
-    };
-  }, [scannerOpen]);
 
   const navItems = [
     { name: "Home", path: "/" },
@@ -134,8 +105,8 @@ const Navbar = () => {
             </Link>
 
             {/* SCAN ICON (AFTER LOGIN) */}
-            <button
-              onClick={() => setScannerOpen(true)}
+            <Link
+              to="/verify"
               className={`p-2 rounded-full transition-colors ${
                 isScrolled ? "hover:bg-gray-100" : "hover:bg-white/10"
               }`}
@@ -148,7 +119,7 @@ const Navbar = () => {
                     : "text-primary-foreground hover:text-white"
                 }`}
               />
-            </button>
+            </Link>
           </div>
 
           {/* MOBILE MENU BUTTON */}
@@ -207,11 +178,9 @@ const Navbar = () => {
             </Link>
 
             {/* SCAN */}
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                setScannerOpen(true);
-              }}
+            <Link
+              to="/verify"
+              onClick={() => setMobileMenuOpen(false)}
               className={`flex items-center gap-2 py-2 font-medium transition-colors ${
                 isScrolled
                   ? "text-muted-foreground hover:text-primary"
@@ -220,30 +189,10 @@ const Navbar = () => {
             >
               <Scan className="h-5 w-5" />
               Scan QR
-            </button>
+            </Link>
           </motion.div>
         )}
       </div>
-
-      {/* SCANNER MODAL */}
-      {scannerOpen && (
-        <div className="fixed inset-0 z-[100] bg-black/70 flex items-center justify-center">
-          <div className="bg-white rounded-xl w-full max-w-sm p-4 relative">
-            <button
-              onClick={() => setScannerOpen(false)}
-              className="absolute right-3 top-3 p-1 rounded hover:bg-muted"
-            >
-              <X className="h-5 w-5" />
-            </button>
-
-            <h2 className="text-center font-semibold mb-3">
-              Scan QR Code
-            </h2>
-
-            <div id="qr-reader" className="w-full" />
-          </div>
-        </div>
-      )}
     </nav>
   );
 };

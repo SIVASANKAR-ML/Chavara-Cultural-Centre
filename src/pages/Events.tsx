@@ -39,9 +39,12 @@ const Events = () => {
     const loadEvents = async () => {
       try {
         setLoading(true);
+        console.log('Fetching events...');
         const fetchedEvents = await fetchEvents();
+        console.log('Fetched events:', fetchedEvents);
         setEvents(fetchedEvents);
       } catch (err) {
+        console.error('Error fetching events:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch events');
       } finally {
         setLoading(false);
@@ -105,6 +108,8 @@ const Events = () => {
         </motion.div>
 
         {loading && <div className="text-center py-20 animate-pulse">Loading Chavara events...</div>}
+        
+        {error && <div className="text-center py-20 text-red-500">Error: {error}</div>}
         
         {!loading && !error && (
           <>

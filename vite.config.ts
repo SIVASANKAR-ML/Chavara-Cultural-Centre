@@ -12,12 +12,11 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     proxy: {
       "^/(api|files|assets)": {
-        target: "http://127.0.0.1:8005", // Check if your other bench is really on 8005
+        target: "http://127.0.0.1:8001", // Changed from 8001 to 8000
         changeOrigin: true,
         secure: false,
-        // 2. ADD THIS: Without this, Frappe will send back "Site Not Found" HTML
         headers: {
-          "X-Frappe-Site-Name": "chavara.local", 
+          "X-Frappe-Site-Name": "library.localhost", // Changed from chavara.local
         },
       },
     },

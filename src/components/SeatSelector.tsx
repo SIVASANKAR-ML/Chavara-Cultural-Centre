@@ -52,13 +52,12 @@ const SeatSelector = ({ totalSeats, bookedSeats, onSeatsChange }: SeatSelectorPr
       alert("No more seats available for this show.");
       return;
     }
-    setSelectedSeats((prev) => {
-      const updated = prev.includes(seatId)
-        ? prev.filter((s) => s !== seatId)
-        : [...prev, seatId];
-      onSeatsChange(updated);
-      return updated;
-    });
+    const updated = selectedSeats.includes(seatId)
+      ? selectedSeats.filter((s) => s !== seatId)
+      : [...selectedSeats, seatId];
+    
+    setSelectedSeats(updated);
+    onSeatsChange(updated);
   };
 
   const seatStatus = (seatId: string) => {

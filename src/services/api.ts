@@ -1,17 +1,11 @@
-/**
- * Interface for the nested Show Times / Schedules
- */
 export interface EventSchedule {
-  name: string;         // Unique ID of the schedule
-  show_date: string;    // YYYY-MM-DD
-  show_time: string;    // HH:mm:ss
+  name: string;
+  show_date: string;
+  show_time: string;
   slot_capacity: number;
-  status: string;       // "Open" or "Closed"
+  status: string;
 }
 
-/**
- * Main Event Interface
- */
 export interface ChavaraEvent {
   id: string;
   title: string;
@@ -24,13 +18,9 @@ export interface ChavaraEvent {
   status: string;
   description: string;
   price: number;
-  schedules?: EventSchedule[]; // Added to handle the data from Event Schedule DocType
+  schedules?: EventSchedule[];
 }
 
-/**
- * Helper: Maps Frappe Chavara Event data to Frontend Types
- * This ensures your UI components always get clean data.
- */
 const mapEvent = (ev: any): ChavaraEvent => ({
   id: ev.name,
   title: ev.event_title,
@@ -42,15 +32,10 @@ const mapEvent = (ev: any): ChavaraEvent => ({
   status: ev.status,
   description: ev.description || '',
   price: ev.price || 0,
-  // If the backend sent schedules (for details page), include them here
   schedules: ev.schedules || [],
-  // Handles the image path (proxy handles /files/ automatically)
   image: ev.event_image || '/placeholder-event.jpg',
 });
 
-/**
- * Fetch all published events (Used for List Pages/Home)
- */
 export async function fetchEvents(search?: string): Promise<ChavaraEvent[]> {
   const url = `/api/method/chavara_booking.api.get_chavara_events${search ? `?search=${search}` : ''}`;
   const response = await fetch(url);
@@ -61,12 +46,7 @@ export async function fetchEvents(search?: string): Promise<ChavaraEvent[]> {
   return (data.message || []).map(mapEvent);
 }
 
-/**
- * Fetch single event with its specific show dates and times
- * (Used for the Event Detail Page)
- */
 export async function fetchEventById(id: string): Promise<ChavaraEvent | null> {
-  // Path matches your backend function get_event_details
   const url = `/api/method/chavara_booking.api.get_event_details?event_id=${encodeURIComponent(id)}`;
   
   const response = await fetch(url);
@@ -78,7 +58,52 @@ export async function fetchEventById(id: string): Promise<ChavaraEvent | null> {
   }
   
   const data = await response.json();
-  
-  // data.message now contains the Event + the Schedules list from your Python logic
   return data.message ? mapEvent(data.message) : null;
+}
+
+export async function createBooking(bookingData: {
+  eventId: string;
+  scheduleId: string;
+  customerName: string;
+  phone: string;
+  email: string;
+  selectedSeats: string[];
+  totalAmount: number;
+}) {
+  const formData = new FormData();
+  formData.append('event_id', bookingData.eventId);
+  formData.append('schedule_id', bookingData.scheduleId);
+  formData.append('customer_name', bookingData.customerName);
+  formData.append('phone', bookingData.phone);
+  formData.append('email', bookingData.email);
+  formData.append('selected_seats', bookingData.selectedSeats.join(','));
+  formData.append('total_amount', bookingData.totalAmount.toString());
+  
+  const response = await fetch('/api/method/chavara_booking.api.create_booking', {
+    method: 'POST',
+    body: formData
+  });
+  
+  if (!response.ok) throw new Error('Failed to create booking');
+  
+  const data = await response.json();
+  return data.message;
+}
+
+export async function getBookingDetails(bookingId: string) {
+  const response = await fetch(`/api/method/chavara_booking.api.get_booking_details?booking_id=${encodeURIComponent(bookingId)}`);
+  
+  if (!response.ok) throw new Error('Failed to fetch booking details');
+  
+  const data = await response.json();
+  return data.message;
+}
+
+export async function getBookedSeats(eventId: string, scheduleId: string) {
+  const response = await fetch(`/api/method/chavara_booking.api.get_booked_seats?event_id=${encodeURIComponent(eventId)}&schedule_id=${encodeURIComponent(scheduleId)}`);
+  
+  if (!response.ok) throw new Error('Failed to fetch booked seats');
+  
+  const data = await response.json();
+  return data.message || [];
 }
