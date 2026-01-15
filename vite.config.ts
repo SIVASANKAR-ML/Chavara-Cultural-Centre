@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     proxy: {
       "^/(api|files|assets)": {
-        target: "http://127.0.0.1:8001", // Changed from 8001 to 8000
+        target: "http://127.0.0.1:8000", // Changed from 8001 to 8000
         changeOrigin: true,
         secure: false,
         headers: {

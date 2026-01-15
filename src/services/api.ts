@@ -107,3 +107,30 @@ export async function getBookedSeats(eventId: string, scheduleId: string) {
   const data = await response.json();
   return data.message || [];
 }
+
+export async function lockSeats(eventId: string, scheduleId: string, seats: string[]) {
+  const formData = new FormData();
+  formData.append('event_id', eventId);
+  formData.append('schedule_id', scheduleId);
+  formData.append('seats', seats.join(','));
+  
+  const response = await fetch('/api/method/chavara_booking.api.lock_seats', {
+    method: 'POST',
+    body: formData
+  });
+  
+  if (!response.ok) throw new Error('Failed to lock seats');
+  
+  const data = await response.json();
+  return data.message;
+}
+
+export async function getLockedSeats(scheduleId: string) {
+  const response = await fetch(`/api/method/chavara_booking.api.get_locked_seats?schedule_id=${encodeURIComponent(scheduleId)}`);
+  
+  if (!response.ok) throw new Error('Failed to fetch locked seats');
+  
+  const data = await response.json();
+  return data.message || [];
+}
+
