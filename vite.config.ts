@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => ({
         changeOrigin: true,
         secure: false,
         headers: {
-          "X-Frappe-Site-Name": "library.localhost", // Changed from chavara.local
+          "X-Frappe-Site-Name": "chavara.local", // Changed from chavara.local
         },
       },
     },

@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import SeatSelector from "@/components/SeatSelector";
-import { fetchEventById, createBooking, getBookedSeats, type ChavaraEvent } from "@/services/api";
+import { fetchEventById, createBooking, getBookedSeats, lockSeats, getLockedSeats, type ChavaraEvent } from "@/services/api";
 import { toast } from "sonner";
 
 interface BookingStep {
@@ -24,6 +24,7 @@ const SeatBooking = () => {
   const [currentStep, setCurrentStep] = useState<BookingStep>({ step: 1, title: "Select Seats" });
   const [loading, setLoading] = useState(true);
   const [bookedSeats, setBookedSeats] = useState<string[]>([]);
+  const [lockedSeats, setLockedSeats] = useState<string[]>([]);
   const [isBooking, setIsBooking] = useState(false);
   
   // Customer details
@@ -38,11 +39,12 @@ const SeatBooking = () => {
         const eventData = await fetchEventById(eventId);
         setEvent(eventData);
         
-        // Load booked seats for this schedule
         if (scheduleId) {
           const booked = await getBookedSeats(eventId, scheduleId);
-          console.log('Booked seats from API:', booked);
           setBookedSeats(booked);
+          
+          const locked = await getLockedSeats(scheduleId);
+          setLockedSeats(locked);
         }
       } catch (error) {
         console.error("Failed to load event:", error);
@@ -52,6 +54,33 @@ const SeatBooking = () => {
     };
     loadEvent();
   }, [eventId, scheduleId]);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (scheduleId) {
+        const locked = await getLockedSeats(scheduleId);
+        setLockedSeats(locked);
+      }
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [scheduleId]);
+
+  const handleSeatsChange = async (seats: string[]) => {
+    const newSeats = seats.filter(s => !selectedSeats.includes(s));
+    
+    if (newSeats.length > 0 && eventId && scheduleId) {
+      try {
+        await lockSeats(eventId, scheduleId, newSeats);
+        setSelectedSeats(seats);
+      } catch (error) {
+        toast.error("Failed to lock seats. They may be taken.");
+        const locked = await getLockedSeats(scheduleId);
+        setLockedSeats(locked);
+      }
+    } else {
+      setSelectedSeats(seats);
+    }
+  };
 
   const selectedSchedule = event?.schedules?.find(s => s.name === scheduleId);
   const ticketPrice = event?.price || 100;
@@ -193,7 +222,8 @@ const SeatBooking = () => {
                   
                   <SeatSelector
                     bookedSeats={bookedSeats}
-                    onSeatsChange={setSelectedSeats}
+                    lockedSeats={lockedSeats}
+                    onSeatsChange={handleSeatsChange}
                   />
                 </>
               ) : (
@@ -315,7 +345,7 @@ const SeatBooking = () => {
               
               {selectedSeats.length > 0 && currentStep.step === 1 && (
                 <p className="text-xs text-muted-foreground mt-2 text-center">
-                  Your seats will be held for 10 minutes
+                  Your seats are locked for 5 minutes
                 </p>
               )}
             </Card>

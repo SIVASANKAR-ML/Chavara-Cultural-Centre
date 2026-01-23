@@ -1,3 +1,9 @@
+import { axiosClient } from "@/lib/axios";
+
+/* =========================
+   Types & Interfaces
+========================= */
+
 export interface EventSchedule {
   name: string;
   show_date: string;
@@ -21,46 +27,67 @@ export interface ChavaraEvent {
   schedules?: EventSchedule[];
 }
 
+interface FrappeResponse<T> {
+  message: T;
+}
+
+/* =========================
+   Mappers
+========================= */
+
 const mapEvent = (ev: any): ChavaraEvent => ({
   id: ev.name,
   title: ev.event_title,
   startDate: ev.start_date,
   endDate: ev.end_date,
-  venue: ev.venue || 'TBA',
+  venue: ev.venue || "TBA",
   maxCapacity: ev.max_capacity || 0,
   day: ev.day,
   status: ev.status,
-  description: ev.description || '',
+  description: ev.description || "",
   price: ev.price || 0,
   schedules: ev.schedules || [],
-  image: ev.event_image || '/placeholder-event.jpg',
+  image: ev.event_image || "/placeholder-event.jpg",
 });
 
-export async function fetchEvents(search?: string): Promise<ChavaraEvent[]> {
-  const url = `/api/method/chavara_booking.api.get_chavara_events${search ? `?search=${search}` : ''}`;
-  const response = await fetch(url);
-  
-  if (!response.ok) throw new Error('Failed to fetch events list');
-  
-  const data = await response.json();
-  return (data.message || []).map(mapEvent);
+/* =========================
+   API Functions
+========================= */
+
+/** Fetch all events */
+export async function fetchEvents(
+  search?: string
+): Promise<ChavaraEvent[]> {
+  const response = await axiosClient.get<
+    FrappeResponse<any[]>
+  >("/method/chavara_booking.api.api.get_chavara_events", {
+    params: search ? { search } : {},
+  });
+
+  return (response.data.message || []).map(mapEvent);
 }
 
-export async function fetchEventById(id: string): Promise<ChavaraEvent | null> {
-  const url = `/api/method/chavara_booking.api.get_event_details?event_id=${encodeURIComponent(id)}`;
-  
-  const response = await fetch(url);
-  
-  if (!response.ok) {
-    const errorMsg = await response.text();
-    console.error("Backend Error:", errorMsg);
+/** Fetch single event details */
+export async function fetchEventById(
+  id: string
+): Promise<ChavaraEvent | null> {
+  try {
+    const response = await axiosClient.get<
+      FrappeResponse<any>
+    >("/method/chavara_booking.api.api.get_event_details", {
+      params: { event_id: id },
+    });
+
+    return response.data.message
+      ? mapEvent(response.data.message)
+      : null;
+  } catch (error) {
+    console.error("fetchEventById error:", error);
     return null;
   }
-  
-  const data = await response.json();
-  return data.message ? mapEvent(data.message) : null;
 }
 
+/** Create booking */
 export async function createBooking(bookingData: {
   eventId: string;
   scheduleId: string;
@@ -70,40 +97,73 @@ export async function createBooking(bookingData: {
   selectedSeats: string[];
   totalAmount: number;
 }) {
-  const formData = new FormData();
-  formData.append('event_id', bookingData.eventId);
-  formData.append('schedule_id', bookingData.scheduleId);
-  formData.append('customer_name', bookingData.customerName);
-  formData.append('phone', bookingData.phone);
-  formData.append('email', bookingData.email);
-  formData.append('selected_seats', bookingData.selectedSeats.join(','));
-  formData.append('total_amount', bookingData.totalAmount.toString());
-  
-  const response = await fetch('/api/method/chavara_booking.api.create_booking', {
-    method: 'POST',
-    body: formData
+  const response = await axiosClient.post<
+    FrappeResponse<any>
+  >("/method/chavara_booking.api.booking.create_booking", {
+    event_id: bookingData.eventId,
+    schedule_id: bookingData.scheduleId,
+    customer_name: bookingData.customerName,
+    phone: bookingData.phone,
+    email: bookingData.email,
+    selected_seats: bookingData.selectedSeats.join(","),
+    total_amount: bookingData.totalAmount,
   });
-  
-  if (!response.ok) throw new Error('Failed to create booking');
-  
-  const data = await response.json();
-  return data.message;
+
+  return response.data.message;
 }
 
+/** Get booking details */
 export async function getBookingDetails(bookingId: string) {
-  const response = await fetch(`/api/method/chavara_booking.api.get_booking_details?booking_id=${encodeURIComponent(bookingId)}`);
-  
-  if (!response.ok) throw new Error('Failed to fetch booking details');
-  
-  const data = await response.json();
-  return data.message;
+  const response = await axiosClient.get<
+    FrappeResponse<any>
+  >("/method/chavara_booking.api.booking.get_booking_details", {
+    params: { booking_id: bookingId },
+  });
+
+  return response.data.message;
 }
 
-export async function getBookedSeats(eventId: string, scheduleId: string) {
-  const response = await fetch(`/api/method/chavara_booking.api.get_booked_seats?event_id=${encodeURIComponent(eventId)}&schedule_id=${encodeURIComponent(scheduleId)}`);
-  
-  if (!response.ok) throw new Error('Failed to fetch booked seats');
-  
-  const data = await response.json();
-  return data.message || [];
+/** Get already booked seats */
+export async function getBookedSeats(
+  eventId: string,
+  scheduleId: string
+) {
+  const response = await axiosClient.get<
+    FrappeResponse<string[]>
+  >("/method/chavara_booking.api.booking.get_booked_seats", {
+    params: {
+      event_id: eventId,
+      schedule_id: scheduleId,
+    },
+  });
+
+  return response.data.message || [];
+}
+
+/** Lock seats temporarily */
+export async function lockSeats(
+  eventId: string,
+  scheduleId: string,
+  seats: string[]
+) {
+  const response = await axiosClient.post<
+    FrappeResponse<any>
+  >("/method/chavara_booking.api.seat_lock.lock_seats", {
+    event_id: eventId,
+    schedule_id: scheduleId,
+    seats: seats.join(","),
+  });
+
+  return response.data.message;
+}
+
+/** Get locked seats */
+export async function getLockedSeats(scheduleId: string) {
+  const response = await axiosClient.get<
+    FrappeResponse<string[]>
+  >("/method/chavara_booking.api.seat_lock.get_locked_seats", {
+    params: { schedule_id: scheduleId },
+  });
+
+  return response.data.message || [];
 }
