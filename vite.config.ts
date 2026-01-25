@@ -7,20 +7,6 @@ export default defineConfig(({ mode }) => ({
   // 1. ADD THIS: This ensures images and scripts load correctly in production
   // base: mode === "production" ? "/assets/chavara_booking/frontend_folder/" : "/",
 
-  server: {
-    host: "::",
-    port: 8080,
-    proxy: {
-      "^/(api|files|assets)": {
-        target: "http://127.0.0.1:8005", // Changed from 8001 to 8000
-        changeOrigin: true,
-        secure: false,
-        headers: {
-          "X-Frappe-Site-Name": "chavara.local", // Changed from chavara.local
-        },
-      },
-    },
-  },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
     alias: {
