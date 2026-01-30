@@ -134,10 +134,10 @@ const BookingConfirmation = () => {
             >
               <CheckCircle className="h-20 w-20 text-primary" />
             </motion.div>
-            <h1 className="font-serif font-bold text-3xl md:text-4xl text-foreground mb-2">
+            <h1 className="font-display font-bold text-3xl md:text-4xl text-foreground mb-2">
               Booking Confirmed!
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="font-body text-muted-foreground text-lg">
               Your tickets have been successfully booked
             </p>
           </div>
@@ -148,13 +148,13 @@ const BookingConfirmation = () => {
               {/* Booking Details */}
               <div className="space-y-6">
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Booking ID</p>
+                  <p className="font-subheading text-sm text-muted-foreground mb-1">Booking ID</p>
                   <p className="font-mono font-bold text-xl text-primary">{booking.booking_id}</p>
                 </div>
 
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Event</p>
-                  <p className="font-serif font-bold text-xl text-foreground">{booking.event_title}</p>
+                  <p className="font-subheading text-sm text-muted-foreground mb-1">Event</p>
+                  <p className="font-display font-bold text-xl text-foreground">{booking.event_title}</p>
                 </div>
 
                 <div className="space-y-4">
@@ -163,8 +163,8 @@ const BookingConfirmation = () => {
                       <Calendar className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Date</p>
-                      <p className="font-semibold text-foreground">{formatDate(booking.event_date)}</p>
+                      <p className="font-subheading text-sm text-muted-foreground">Date</p>
+                      <p className="font-heading font-semibold text-foreground">{formatDate(booking.event_date)}</p>
                     </div>
                   </div>
 
@@ -173,8 +173,8 @@ const BookingConfirmation = () => {
                       <Clock className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Time</p>
-                      <p className="font-semibold text-foreground">{booking.event_time}</p>
+                      <p className="font-subheading text-sm text-muted-foreground">Time</p>
+                      <p className="font-heading font-semibold text-foreground">{booking.event_time}</p>
                     </div>
                   </div>
 
@@ -183,8 +183,8 @@ const BookingConfirmation = () => {
                       <Ticket className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Seats</p>
-                      <p className="font-semibold text-foreground">{booking.seats.join(", ")}</p>
+                      <p className="font-subheading text-sm text-muted-foreground">Seats</p>
+                      <p className="font-heading font-semibold text-foreground">{booking.seats.join(", ")}</p>
                     </div>
                   </div>
                 </div>
@@ -238,8 +238,8 @@ const BookingConfirmation = () => {
 
           {/* Important Information */}
           <Card className="mt-8 p-6 bg-muted/30">
-            <h3 className="font-semibold text-foreground mb-3">Important Information</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <h3 className="font-heading font-semibold text-foreground mb-3">Important Information</h3>
+            <ul className="font-body space-y-2 text-sm text-muted-foreground">
               <li>• Please arrive at least 30 minutes before the event start time</li>
               <li>• Carry a valid ID proof for verification</li>
               <li>• This QR code is your entry ticket - keep it safe</li>

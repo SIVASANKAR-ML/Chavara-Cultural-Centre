@@ -1,6 +1,7 @@
 import { useState, ChangeEvent, FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -12,6 +13,7 @@ interface LoginForm {
 const Login: React.FC = () => {
   const [form, setForm] = useState<LoginForm>({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -29,7 +31,6 @@ const Login: React.FC = () => {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black">
-
       {/* BACKGROUND IMAGE */}
       <div
         className="absolute inset-0 bg-cover bg-center"
@@ -62,10 +63,9 @@ const Login: React.FC = () => {
         className="relative z-10 w-full max-w-md p-10 rounded-2xl 
                    bg-white/90 backdrop-blur-xl shadow-[0_30px_80px_rgba(0,0,0,0.4)]"
       >
-        {/* GLOW */}
         <div className="absolute inset-0 rounded-2xl ring-1 ring-orange-500/20 pointer-events-none" />
 
-        {/* LOADER OVERLAY */}
+        {/* LOADER */}
         <AnimatePresence>
           {loading && (
             <motion.div
@@ -76,7 +76,6 @@ const Login: React.FC = () => {
             >
               <div className="relative h-16 w-16">
                 <div className="absolute inset-0 rounded-full border-2 border-orange-200" />
-
                 <motion.span
                   animate={{ rotate: 360 }}
                   transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
@@ -84,16 +83,7 @@ const Login: React.FC = () => {
                 >
                   <span className="h-3 w-3 rounded-full bg-orange-500" />
                 </motion.span>
-
-                <motion.span
-                  animate={{ rotate: -360 }}
-                  transition={{ repeat: Infinity, duration: 1.8, ease: "linear" }}
-                  className="absolute inset-0 flex items-end justify-center"
-                >
-                  <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
-                </motion.span>
               </div>
-
               <p className="mt-4 text-sm font-semibold text-orange-600">
                 Authenticating...
               </p>
@@ -101,12 +91,12 @@ const Login: React.FC = () => {
           )}
         </AnimatePresence>
 
-        {/* CONTENT */}
         <h2 className="text-3xl font-bold text-center mb-6 text-orange-600">
           Welcome Back
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* EMAIL */}
           <div>
             <label className="block text-sm font-medium mb-2 text-gray-700">
               Email
@@ -122,19 +112,33 @@ const Login: React.FC = () => {
             />
           </div>
 
+          {/* PASSWORD */}
           <div>
             <label className="block text-sm font-medium mb-2 text-gray-700">
               Password
             </label>
-            <Input
-              type="password"
-              name="password"
-              placeholder="Enter your password"
-              value={form.password}
-              onChange={handleChange}
-              required
-              disabled={loading}
-            />
+
+            <div className="relative">
+              <Input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Enter your password"
+                value={form.password}
+                onChange={handleChange}
+                required
+                disabled={loading}
+                className="pr-10"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                disabled={loading}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-orange-600"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
 
             <div className="text-right mt-2">
               <Link

@@ -111,7 +111,7 @@ const Home = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="font-serif font-bold text-4xl md:text-6xl lg:text-7xl text-white mb-6"
+            className="font-display font-bold text-4xl md:text-6xl lg:text-7xl text-white mb-6"
           >
             Where Culture, Art, and Heritage Come Alive
           </motion.h1>
