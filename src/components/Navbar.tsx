@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Menu, X, User, Scan } from "lucide-react";
+import { Menu, X, User, Scan, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import logo from "@/assets/logo.png";
@@ -9,12 +9,20 @@ const Navbar = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showScrollIcon, setShowScrollIcon] = useState(true);
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+      setShowScrollIcon(window.scrollY < 100);
+    };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleScrollDown = () => {
+    window.scrollBy({ top: 300, behavior: "smooth" });
+  };
 
   const navItems = [
     { name: "Home", path: "/" },
@@ -32,7 +40,7 @@ const Navbar = () => {
         isScrolled
           ? "border-border bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60"
           : "border-primary-foreground/20 bg-gradient-hero"
-      }`}
+      } ${showScrollIcon ? "pb-4 md:pb-0" : ""}`}
     >
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
@@ -131,6 +139,32 @@ const Navbar = () => {
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
+
+          {/* SCROLL DOWN ICON - Mobile only */}
+          {showScrollIcon && (
+            <motion.button
+              onClick={handleScrollDown}
+              className="md:hidden p-2 rounded-full transition-colors"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0 }}
+              transition={{ type: "spring", stiffness: 200, damping: 20 }}
+              title="Scroll down"
+            >
+              <motion.div
+                animate={{ y: [0, 8, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
+              >
+                <ChevronDown
+                  className={`h-5 w-5 ${
+                    isScrolled
+                      ? "text-muted-foreground hover:text-primary"
+                      : "text-primary-foreground hover:text-white"
+                  }`}
+                />
+              </motion.div>
+            </motion.button>
+          )}
         </div>
 
         {/* MOBILE MENU */}
@@ -138,58 +172,60 @@ const Navbar = () => {
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="md:hidden border-t border-primary-foreground/20 bg-gradient-hero py-4"
+            className="md:hidden border-t bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 py-4"
           >
-            {navItems.map((item) => (
-              <Link
+            {navItems.map((item, index) => (
+              <motion.div
                 key={item.path}
-                to={item.path}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block py-2 font-medium transition-colors ${
-                  isScrolled
-                    ? `hover:text-primary ${
-                        isActive(item.path)
-                          ? "text-primary font-semibold"
-                          : "text-muted-foreground"
-                      }`
-                    : `hover:text-white ${
-                        isActive(item.path)
-                          ? "text-white font-semibold"
-                          : "text-primary-foreground"
-                      }`
-                }`}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
               >
-                {item.name}
-              </Link>
+                <Link
+                  to={item.path}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-4 py-3 font-medium transition-all duration-300 rounded-lg mx-2 my-1 ${
+                    isActive(item.path)
+                      ? "bg-blue-500 text-white shadow-lg shadow-blue-500/50"
+                      : "text-slate-100 hover:bg-slate-700/50 hover:text-blue-400"
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              </motion.div>
             ))}
 
             {/* LOGIN */}
-            <Link
-              to="/login"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-2 py-2 font-medium transition-colors ${
-                isScrolled
-                  ? "text-muted-foreground hover:text-primary"
-                  : "text-primary-foreground hover:text-white"
-              }`}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: navItems.length * 0.1 }}
             >
-              <User className="h-5 w-5" />
-              Login
-            </Link>
+              <Link
+                to="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2 px-4 py-3 font-medium transition-all duration-300 rounded-lg mx-2 my-1 text-slate-100 hover:bg-emerald-500/20 hover:text-emerald-400"
+              >
+                <User className="h-5 w-5" />
+                Login
+              </Link>
+            </motion.div>
 
             {/* SCAN */}
-            <Link
-              to="/verify"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-2 py-2 font-medium transition-colors ${
-                isScrolled
-                  ? "text-muted-foreground hover:text-primary"
-                  : "text-primary-foreground hover:text-white"
-              }`}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: (navItems.length + 1) * 0.1 }}
             >
-              <Scan className="h-5 w-5" />
-              Scan QR
-            </Link>
+              <Link
+                to="/verify"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2 px-4 py-3 font-medium transition-all duration-300 rounded-lg mx-2 my-1 text-slate-100 hover:bg-purple-500/20 hover:text-purple-400"
+              >
+                <Scan className="h-5 w-5" />
+                Scan QR
+              </Link>
+            </motion.div>
           </motion.div>
         )}
       </div>

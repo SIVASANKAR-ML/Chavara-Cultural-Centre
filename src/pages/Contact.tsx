@@ -22,10 +22,10 @@ const Contact = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="font-serif font-bold text-4xl md:text-5xl text-primary-foreground mb-4">
+            <h1 className="font-display font-bold text-4xl md:text-5xl text-primary-foreground mb-4">
               Contact Us
             </h1>
-            <p className="text-primary-foreground/90 text-lg max-w-2xl mx-auto">
+            <p className="font-body text-primary-foreground/90 text-lg max-w-2xl mx-auto">
               Get in touch with us for bookings, inquiries, or feedback
             </p>
           </motion.div>
@@ -43,10 +43,10 @@ const Contact = () => {
             className="space-y-6"
           >
             <div>
-              <h2 className="font-serif font-bold text-3xl text-foreground mb-4">
+              <h2 className="font-display font-bold text-3xl text-foreground mb-4">
                 Get in Touch
               </h2>
-              <p className="text-muted-foreground">
+              <p className="font-body text-muted-foreground">
                 We'd love to hear from you. Send us a message and we'll respond as soon as possible.
               </p>
             </div>
@@ -58,8 +58,8 @@ const Contact = () => {
                     <MapPin className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground mb-1">Address</h3>
-                    <p className="text-muted-foreground">
+                    <h3 className="font-heading font-semibold text-foreground mb-1">Address</h3>
+                    <p className="font-body text-muted-foreground">
                       Chavara Cultural Center<br />
                       Chavara, Kollam District<br />
                       Kerala, India - 691583
@@ -74,8 +74,8 @@ const Contact = () => {
                     <Phone className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground mb-1">Phone</h3>
-                    <p className="text-muted-foreground">
+                    <h3 className="font-heading font-semibold text-foreground mb-1">Phone</h3>
+                    <p className="font-body text-muted-foreground">
                       +91 1234567890<br />
                       +91 0987654321
                     </p>
@@ -89,8 +89,8 @@ const Contact = () => {
                     <Mail className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground mb-1">Email</h3>
-                    <p className="text-muted-foreground">
+                    <h3 className="font-heading font-semibold text-foreground mb-1">Email</h3>
+                    <p className="font-body text-muted-foreground">
                       info@chavaracultural.in<br />
                       bookings@chavaracultural.in
                     </p>
@@ -104,8 +104,8 @@ const Contact = () => {
                     <Clock className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground mb-1">Working Hours</h3>
-                    <p className="text-muted-foreground">
+                    <h3 className="font-heading font-semibold text-foreground mb-1">Working Hours</h3>
+                    <p className="font-body text-muted-foreground">
                       Monday - Saturday: 9:00 AM - 6:00 PM<br />
                       Sunday: 10:00 AM - 4:00 PM
                     </p>
@@ -122,13 +122,13 @@ const Contact = () => {
             transition={{ duration: 0.6 }}
           >
             <Card className="p-8 shadow-elegant">
-              <h2 className="font-serif font-bold text-2xl text-foreground mb-6">
+              <h2 className="font-display font-bold text-2xl text-foreground mb-6">
                 Send us a Message
               </h2>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
+                  <label htmlFor="name" className="font-heading block text-sm font-medium text-foreground mb-2">
                     Your Name
                   </label>
                   <Input
@@ -141,7 +141,7 @@ const Contact = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+                  <label htmlFor="email" className="font-heading block text-sm font-medium text-foreground mb-2">
                     Email Address
                   </label>
                   <Input
@@ -154,7 +154,7 @@ const Contact = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
+                  <label htmlFor="phone" className="font-heading block text-sm font-medium text-foreground mb-2">
                     Phone Number
                   </label>
                   <Input
@@ -166,7 +166,7 @@ const Contact = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-foreground mb-2">
+                  <label htmlFor="subject" className="font-heading block text-sm font-medium text-foreground mb-2">
                     Subject
                   </label>
                   <Input
@@ -179,7 +179,7 @@ const Contact = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
+                  <label htmlFor="message" className="font-heading block text-sm font-medium text-foreground mb-2">
                     Message
                   </label>
                   <Textarea
@@ -187,7 +187,7 @@ const Contact = () => {
                     placeholder="Tell us more about your inquiry..."
                     rows={6}
                     required
-                    className="w-full resize-none"
+                    className="w-full resize-none font-body"
                   />
                 </div>
 

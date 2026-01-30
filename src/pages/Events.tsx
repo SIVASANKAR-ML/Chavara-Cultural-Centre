@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
-import { Play, History } from "lucide-react"; 
+import { motion, AnimatePresence } from "framer-motion";
+import { Play, History, X } from "lucide-react"; 
 import { Link } from "react-router-dom";
 import EventCard from "@/components/EventCard";
 import { pastEvents as highlightVideos } from "@/data/events"; 
@@ -34,6 +34,8 @@ const Events = () => {
   const [events, setEvents] = useState<ChavaraEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hoveredVideoId, setHoveredVideoId] = useState<string | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<typeof highlightVideos[0] | null>(null);
 
   useEffect(() => {
     const loadEvents = async () => {
@@ -177,27 +179,108 @@ const Events = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.08, duration: 0.4 }}
-                    className="bg-card rounded-lg overflow-hidden shadow-card hover:shadow-elegant transition-all"
+                    className="relative"
                   >
-                    <div className="relative aspect-video bg-muted group cursor-pointer">
-                      <iframe
-                        src={video.videoUrl}
-                        title={video.title}
-                        className="w-full h-full"
-                        allowFullScreen
-                      />
-                      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors flex items-center justify-center pointer-events-none">
-                        <Play className="h-16 w-16 text-white opacity-80" />
+                    <motion.div
+                      onMouseEnter={() => setHoveredVideoId(video.id)}
+                      onMouseLeave={() => setHoveredVideoId(null)}
+                      onClick={() => setSelectedVideo(video)}
+                      animate={
+                        hoveredVideoId === video.id
+                          ? { scale: 1.08, y: -15 }
+                          : { scale: 1, y: 0 }
+                      }
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      className="bg-card rounded-lg overflow-hidden shadow-card hover:shadow-elegant transition-all cursor-pointer"
+                    >
+                      <div className="relative aspect-video bg-muted group">
+                        <motion.div
+                          animate={hoveredVideoId === video.id ? { opacity: 1 } : { opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="absolute inset-0 z-10"
+                        >
+                          <iframe
+                            src={`${video.videoUrl}?autoplay=1`}
+                            title={video.title}
+                            className="w-full h-full"
+                            allowFullScreen
+                          />
+                        </motion.div>
+
+                        <motion.div
+                          animate={hoveredVideoId === video.id ? { opacity: 0 } : { opacity: 1 }}
+                          transition={{ duration: 0.2 }}
+                          className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors flex items-center justify-center"
+                        >
+                          <motion.div
+                            animate={hoveredVideoId === video.id ? { scale: 1.3 } : { scale: 1 }}
+                            transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                          >
+                            <Play className="h-16 w-16 text-white opacity-80" />
+                          </motion.div>
+                        </motion.div>
                       </div>
-                    </div>
-                    <div className="p-6">
-                      <h3 className="font-serif font-bold text-lg text-foreground mb-2">{video.title}</h3>
-                      <p className="text-sm text-muted-foreground mb-2">{video.date}</p>
-                      <p className="text-sm text-muted-foreground">{video.description}</p>
-                    </div>
+                      <div className="p-6">
+                        <h3 className="font-serif font-bold text-lg text-foreground mb-2">{video.title}</h3>
+                        <p className="text-sm text-muted-foreground mb-2">{video.date}</p>
+                        <p className="text-sm text-muted-foreground">{video.description}</p>
+                      </div>
+                    </motion.div>
                   </motion.div>
                 ))}
               </div>
+
+              {/* Video Modal - Pop-up on Click */}
+              <AnimatePresence>
+                {selectedVideo && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+                    onClick={() => setSelectedVideo(null)}
+                  >
+                    <motion.div
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.8, opacity: 0 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      className="relative w-full max-w-4xl bg-black rounded-lg overflow-hidden"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <button
+                        onClick={() => setSelectedVideo(null)}
+                        className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/80 rounded-full p-2 transition-colors"
+                      >
+                        <X className="h-6 w-6 text-white" />
+                      </button>
+
+                      <div className="aspect-video">
+                        <iframe
+                          src={`${selectedVideo.videoUrl}?autoplay=1`}
+                          title={selectedVideo.title}
+                          className="w-full h-full"
+                          allowFullScreen
+                        />
+                      </div>
+
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="p-6 bg-card"
+                      >
+                        <h2 className="font-serif font-bold text-2xl text-foreground mb-2">
+                          {selectedVideo.title}
+                        </h2>
+                        <p className="text-sm text-muted-foreground mb-4">{selectedVideo.date}</p>
+                        <p className="text-foreground">{selectedVideo.description}</p>
+                      </motion.div>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </section>
           </>
         )}

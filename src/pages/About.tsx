@@ -23,10 +23,10 @@ const About = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="font-serif font-bold text-4xl md:text-5xl text-primary-foreground mb-4">
+            <h1 className="font-display font-bold text-4xl md:text-5xl text-primary-foreground mb-4">
               About Us
             </h1>
-            <p className="text-primary-foreground/90 text-lg max-w-2xl mx-auto">
+            <p className="font-subheading text-primary-foreground/90 text-lg max-w-2xl mx-auto">
               Preserving and celebrating Kerala's rich cultural heritage
             </p>
           </motion.div>
@@ -63,10 +63,10 @@ const About = () => {
               transition={{ duration: 0.6 }}
               className="text-center mb-12"
             >
-              <h2 className="font-serif font-bold text-3xl md:text-4xl text-foreground mb-4">
+              <h2 className="font-display font-bold text-3xl md:text-4xl text-foreground mb-4">
                 Team Behind
               </h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
+              <p className="font-body text-muted-foreground max-w-2xl mx-auto">
                 Meet the passionate individuals who bring our cultural vision to life.
               </p>
             </motion.div>
