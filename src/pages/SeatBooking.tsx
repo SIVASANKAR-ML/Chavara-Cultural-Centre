@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Clock, MapPin, Calendar } from "lucide-react";
@@ -21,6 +21,7 @@ const SeatBooking = () => {
   
   const [event, setEvent] = useState<ChavaraEvent | null>(null);
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+  const [totalPrice, setTotalPrice] = useState(0); // NEW: Track total price from seat selector
   const [currentStep, setCurrentStep] = useState<BookingStep>({ step: 1, title: "Select Seats" });
   const [loading, setLoading] = useState(true);
   const [bookedSeats, setBookedSeats] = useState<string[]>([]);
@@ -37,6 +38,10 @@ const SeatBooking = () => {
       if (!eventId) return;
       try {
         const eventData = await fetchEventById(eventId);
+        console.log('📥 Event loaded:', eventData);
+        console.log('📥 Event schedules:', eventData?.schedules);
+        console.log('📥 First schedule pricing:', eventData?.schedules?.[0]?.row_wise_pricing);
+        
         setEvent(eventData);
         
         if (scheduleId) {
@@ -48,6 +53,7 @@ const SeatBooking = () => {
         }
       } catch (error) {
         console.error("Failed to load event:", error);
+        toast.error("Failed to load event details");
       } finally {
         setLoading(false);
       }
@@ -55,36 +61,64 @@ const SeatBooking = () => {
     loadEvent();
   }, [eventId, scheduleId]);
 
+  // Poll for locked seats updates
   useEffect(() => {
     const interval = setInterval(async () => {
       if (scheduleId) {
         const locked = await getLockedSeats(scheduleId);
         setLockedSeats(locked);
       }
-    }, 10000);
+    }, 10000); // Poll every 10 seconds
     return () => clearInterval(interval);
   }, [scheduleId]);
 
-  const handleSeatsChange = async (seats: string[]) => {
+  // NEW: Updated handler to receive both seats and price
+  const handleSeatsChange = async (seats: string[], price: number) => {
     const newSeats = seats.filter(s => !selectedSeats.includes(s));
     
+    // Update state immediately - DON'T re-fetch data
+    setSelectedSeats(seats);
+    setTotalPrice(price); // NEW: Update total price
+    
+    // Only lock new seats if there are any
     if (newSeats.length > 0 && eventId && scheduleId) {
       try {
         await lockSeats(eventId, scheduleId, newSeats);
-        setSelectedSeats(seats);
       } catch (error) {
         toast.error("Failed to lock seats. They may be taken.");
+        // Refresh locked seats only, not the whole event
         const locked = await getLockedSeats(scheduleId);
         setLockedSeats(locked);
       }
-    } else {
-      setSelectedSeats(seats);
     }
   };
 
-  const selectedSchedule = event?.schedules?.find(s => s.name === scheduleId);
-  const ticketPrice = event?.price || 100;
-  const totalAmount = selectedSeats.length * ticketPrice;
+  // NEW: Memoize selected schedule to prevent losing pricing data on re-renders
+  const selectedSchedule = useMemo(() => {
+    const schedule = event?.schedules?.find(s => s.name === scheduleId);
+    console.log('useMemo - selectedSchedule:', schedule);
+    console.log('useMemo - row_wise_pricing:', schedule?.row_wise_pricing);
+    return schedule;
+  }, [event?.schedules, scheduleId]);
+  
+  const rowPricing = useMemo(() => {
+    const pricing = selectedSchedule?.row_wise_pricing || [];
+    console.log('useMemo - rowPricing:', pricing);
+    return pricing;
+  }, [selectedSchedule]);
+  
+  // Debug: Log pricing data
+  console.log('Selected schedule:', selectedSchedule);
+  console.log('Schedule keys:', selectedSchedule ? Object.keys(selectedSchedule) : 'none');
+  console.log('Row pricing data:', rowPricing);
+  console.log('Total price:', totalPrice);
+  
+  // NEW: Calculate convenience fee (2% of ticket price or minimum ₹50)
+  const convenienceFee = selectedSeats.length > 0 
+    ?  Math.round(totalPrice * 0.12) 
+    : 0;
+  
+  const finalAmount = totalPrice + convenienceFee; // NEW: Use calculated price instead of fixed price
 
   const handleProceedToPayment = async () => {
     if (selectedSeats.length === 0) {
@@ -102,6 +136,19 @@ const SeatBooking = () => {
       return;
     }
     
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    
+    // Validate phone number (basic validation)
+    if (phone.length < 10) {
+      toast.error("Please enter a valid phone number");
+      return;
+    }
+    
     setIsBooking(true);
     
     try {
@@ -112,7 +159,7 @@ const SeatBooking = () => {
         phone,
         email,
         selectedSeats,
-        totalAmount: totalAmount + 50
+        totalAmount: finalAmount // NEW: Use calculated final amount
       });
       
       console.log('Booking result:', bookingResult);
@@ -133,17 +180,33 @@ const SeatBooking = () => {
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading event details...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!event) {
-    return <div className="min-h-screen flex items-center justify-center">Event not found</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-xl font-semibold text-gray-800 mb-2">Event not found</p>
+          <Button onClick={() => navigate("/events")} variant="outline">
+            Back to Events
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b sticky top-0 z-10">
+      <div className="bg-white border-b sticky top-0 z-10 shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-4">
             <Button
@@ -220,9 +283,11 @@ const SeatBooking = () => {
                     </p>
                   </div>
                   
+                  {/* NEW: Pass rowPricing to SeatSelector */}
                   <SeatSelector
                     bookedSeats={bookedSeats}
                     lockedSeats={lockedSeats}
+                    rowPricing={rowPricing}
                     onSeatsChange={handleSeatsChange}
                   />
                 </>
@@ -253,6 +318,7 @@ const SeatBooking = () => {
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="Enter your phone number"
+                        type="tel"
                       />
                     </div>
                     
@@ -310,19 +376,19 @@ const SeatBooking = () => {
                 )}
               </div>
 
-              {/* Pricing */}
+              {/* NEW: Updated Pricing Display */}
               <div className="border-t pt-4 space-y-2">
-                <div className="flex justify-between">
-                  <span>Tickets ({selectedSeats.length})</span>
-                  <span>₹{(selectedSeats.length * ticketPrice).toLocaleString()}</span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Tickets ({selectedSeats.length})</span>
+                  <span className="font-medium">₹{totalPrice.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>Convenience Fee</span>
-                  <span>₹{selectedSeats.length > 0 ? 50 : 0}</span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Convenience Fee</span>
+                  <span className="font-medium">₹{convenienceFee.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between font-bold text-lg border-t pt-2">
+                <div className="flex justify-between font-bold text-lg border-t pt-2 mt-2">
                   <span>Total</span>
-                  <span>₹{(totalAmount + (selectedSeats.length > 0 ? 50 : 0)).toLocaleString()}</span>
+                  <span className="text-green-600">₹{finalAmount.toLocaleString()}</span>
                 </div>
               </div>
 
@@ -333,13 +399,16 @@ const SeatBooking = () => {
                 onClick={handleProceedToPayment}
               >
                 {isBooking ? (
-                  "Creating Booking..."
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    Creating Booking...
+                  </div>
                 ) : currentStep.step === 1 ? (
                   selectedSeats.length === 0 
                     ? "Select Seats to Continue" 
-                    : "Continue to Details"
+                    : `Continue to Details`
                 ) : (
-                  `Confirm Booking ₹${(totalAmount + 50).toLocaleString()}`
+                  `Confirm Booking ₹${finalAmount.toLocaleString()}`
                 )}
               </Button>
               

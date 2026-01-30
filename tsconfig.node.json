@@ -5,8 +5,9 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
-    /* Bundler mode */
-    "moduleResolution": "bundler",
+    "types": ["node"],               // ✅ ADD THIS
+    "moduleResolution": "node",
+    
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
