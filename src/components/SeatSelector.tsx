@@ -2,18 +2,24 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
+interface RowPricing {
+  row_from: string;
+  row_to: string;
+  price: number;
+}
+
 interface SeatSelectorProps {
   totalSeats?: number;
   bookedSeats: string[];
   lockedSeats?: string[];
-  onSeatsChange: (seats: string[]) => void;
+  rowPricing?: RowPricing[]; // NEW: Row-wise pricing from API
+  onSeatsChange: (seats: string[], totalPrice: number) => void; // Updated to include price
 }
 
 const SEAT_MAP: Record<
   string,
   { left: number[]; right: number[] }
 > = {
-  // Row A Logic: 5 above 12, 6 above 13
   A: { left: [1, 2, 3, 4, 5], right: [6, 7, 8, 9, 10, 11, 12, 13, 14] },
   B: { left: range(1, 12), right: range(13, 24) },
   C: { left: range(1, 12), right: range(13, 24) },
@@ -73,16 +79,43 @@ function getRowGroup(row: string): RowGroup | null {
   ) ?? null;
 }
 
-
-const SeatSelector = ({ totalSeats, bookedSeats, lockedSeats = [], onSeatsChange }: SeatSelectorProps) => {
+const SeatSelector = ({ 
+  totalSeats, 
+  bookedSeats, 
+  lockedSeats = [], 
+  rowPricing = [],
+  onSeatsChange 
+}: SeatSelectorProps) => {
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+
+  // Debug: Log rowPricing when component mounts or updates
+  console.log('SeatSelector rowPricing:', rowPricing);
+
+  // NEW: Function to get price for a specific row
+  const getRowPrice = (row: string): number => {
+    const pricing = rowPricing.find(p => {
+      const from = p.row_from.toUpperCase();
+      const to = p.row_to.toUpperCase();
+      return row >= from && row <= to;
+    });
+    
+    console.log(`Row ${row} pricing:`, pricing?.price || 0);
+    return pricing?.price || 0;
+  };
+
+  // NEW: Calculate total price based on selected seats
+  const calculateTotalPrice = (seats: string[]): number => {
+    return seats.reduce((total, seatId) => {
+      const row = seatId[0];
+      return total + getRowPrice(row);
+    }, 0);
+  };
 
   const toggleSeat = (seatId: string) => {
     if (bookedSeats.includes(seatId) || lockedSeats.includes(seatId)) return;
     const total = totalSeats ?? Object.values(SEAT_MAP).reduce((acc, cur) => acc + cur.left.length + cur.right.length, 0);
     const remaining = Math.max(0, total - bookedSeats.length - lockedSeats.length - selectedSeats.length);
     if (!selectedSeats.includes(seatId) && remaining <= 0) {
-      // eslint-disable-next-line no-alert
       alert("No more seats available for this show.");
       return;
     }
@@ -91,7 +124,9 @@ const SeatSelector = ({ totalSeats, bookedSeats, lockedSeats = [], onSeatsChange
       : [...selectedSeats, seatId];
     
     setSelectedSeats(updated);
-    onSeatsChange(updated);
+    // NEW: Calculate and pass price immediately
+    const totalPrice = calculateTotalPrice(updated);
+    onSeatsChange(updated, totalPrice);
   };
 
   const seatStatus = (seatId: string) => {
@@ -103,7 +138,7 @@ const SeatSelector = ({ totalSeats, bookedSeats, lockedSeats = [], onSeatsChange
 
   function Seat(seatId: string) {
     const status = seatStatus(seatId);
-    const row = seatId[0]; // A, B, C...
+    const row = seatId[0];
     const group = getRowGroup(row);
     const colors = group ? ROW_COLORS[group] : null;  
 
@@ -118,8 +153,8 @@ const SeatSelector = ({ totalSeats, bookedSeats, lockedSeats = [], onSeatsChange
           "w-6 h-6 xs:w-7 xs:h-7 sm:w-9 sm:h-9 rounded-full text-[8px] xs:text-[10px] sm:text-sm border-2 font-semibold flex items-center justify-center shrink-0 transition-all",
           status === "booked" && "bg-gray-100 border-gray-200 text-gray-300 cursor-not-allowed",
           status === "locked" && "bg-yellow-100 border-yellow-300 text-yellow-600 cursor-not-allowed",
-           status === "selected" && colors?.selected,
-        status === "available" && colors?.available
+          status === "selected" && colors?.selected,
+          status === "available" && colors?.available
         )}
       >
         {seatId.slice(1)}
@@ -127,10 +162,49 @@ const SeatSelector = ({ totalSeats, bookedSeats, lockedSeats = [], onSeatsChange
     );
   }
 
+  // NEW: Get unique row groups with pricing
+  const getRowGroupPricing = (): { group: RowGroup; price: number }[] => {
+    const groups: RowGroup[] = ["AE", "FJ", "KP", "QS"];
+    return groups.map(group => {
+      const firstRow = ROW_GROUPS[group][0];
+      const price = getRowPrice(firstRow);
+      return { group, price };
+    });
+  };
+
+  const rowGroupPricing = getRowGroupPricing();
+
   return (
     <div className="w-full flex flex-col items-center bg-white py-8">
       
-      {/* SEATING AREA - Enables horizontal scroll like BookMyShow */}
+      {/* NEW: Price legend at the top */}
+      {rowPricing.length > 0 && (
+        <div className="w-full max-w-2xl mb-6 px-4">
+          <h3 className="text-sm font-semibold text-gray-700 mb-3">Pricing by Row</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {rowGroupPricing.map(({ group, price }) => (
+              <div 
+                key={group}
+                className="flex items-center gap-2 p-2 rounded-lg border bg-white"
+              >
+                <div className={cn(
+                  "w-4 h-4 rounded-full border-2",
+                  ROW_COLORS[group].available.includes("red") && "border-red-500",
+                  ROW_COLORS[group].available.includes("purple") && "border-purple-500",
+                  ROW_COLORS[group].available.includes("green") && "border-green-500",
+                  ROW_COLORS[group].available.includes("blue") && "border-blue-500"
+                )} />
+                <div className="text-xs">
+                  <div className="font-semibold text-gray-700">{group}</div>
+                  <div className="text-gray-500">₹{price}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* SEATING AREA */}
       <div className="w-full overflow-x-auto pb-8 px-2 scrollbar-hide touch-pan-x">
         <div className="min-w-fit flex flex-col items-center mx-auto space-y-2 xs:space-y-3">
           {Object.entries(SEAT_MAP).map(([row, blocks]) => (
@@ -138,27 +212,18 @@ const SeatSelector = ({ totalSeats, bookedSeats, lockedSeats = [], onSeatsChange
               key={row} 
               className={cn(
                 "flex items-center gap-2 sm:gap-4",
-                row === 'J' && "mb-8" // Standard aisle gap between rows
+                row === 'J' && "mb-8",
+                row === 'K' && "mt-8"
               )}
             >
-            <div 
-                key={row} 
-                className={cn(
-                  "flex items-center gap-2 sm:gap-4",
-                  row === 'K' && "mt-8"   // 👈 gap between J and L
-                )}
-            >
-            
               {/* LEFT ROW LABEL */}
               <span className="w-4 text-center text-[10px] sm:text-sm text-gray-400 font-bold uppercase">{row}</span>
 
               {/* LEFT BLOCK */}
               <div className="flex gap-1 sm:gap-2">
-                {/* Row A Padding: Add 7 empty spaces so seat 5 aligns with seat 12 below */}
                 {row === 'A' && Array(7).fill(0).map((_, i) => (
                   <div key={`pl-${i}`} className="w-6 h-6 xs:w-7 xs:h-7 sm:w-9 sm:h-9" />
                 ))}
-               
                 {blocks.left.map(num => Seat(`${row}${num}`))}
               </div>
 
@@ -168,7 +233,6 @@ const SeatSelector = ({ totalSeats, bookedSeats, lockedSeats = [], onSeatsChange
               {/* RIGHT BLOCK */}
               <div className="flex gap-1 sm:gap-2">
                 {blocks.right.map(num => Seat(`${row}${num}`))}
-                {/* Row A End Padding: 3 spaces to keep row visual balance */}
                 {row === 'A' && Array(3).fill(0).map((_, i) => (
                   <div key={`pr-${i}`} className="w-6 h-6 xs:w-7 xs:h-7 sm:w-9 sm:h-9" />
                 ))}
@@ -180,18 +244,15 @@ const SeatSelector = ({ totalSeats, bookedSeats, lockedSeats = [], onSeatsChange
               {/* RIGHT ROW LABEL */}
               <span className="w-4 text-center text-[10px] sm:text-sm text-gray-400 font-bold uppercase">{row}</span>
             </div>
-            </div>
           ))}
         </div>
       </div>
-      
 
-      {/* SCREEN SECTION (Now at the Bottom) */}
+      {/* SCREEN SECTION */}
       <div className="w-full max-w-sm sm:max-w-md mt-6 px-4">
         <div className="flex flex-col items-center">
           <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-2">All eyes this way</p>
           <div className="relative w-full h-2">
-            {/* Curved Screen Effect */}
             <div className="absolute inset-0 bg-gray-200 rounded-[100%] scale-y-50 shadow-[0_-15px_30px_rgba(0,0,0,0.05)]" />
           </div>
           <p className="text-[10px] text-gray-300 mt-4">Screen</p>
@@ -205,6 +266,23 @@ const SeatSelector = ({ totalSeats, bookedSeats, lockedSeats = [], onSeatsChange
         <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-yellow-100 border border-yellow-300" /> Locked</div>
         <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-gray-200" /> Sold</div>
       </div>
+
+      {/* NEW: Selected seats summary */}
+      {selectedSeats.length > 0 && (
+        <div className="mt-6 p-4 bg-gray-50 rounded-lg w-full max-w-md">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-semibold text-gray-700">
+              Selected Seats ({selectedSeats.length})
+            </span>
+            <span className="text-lg font-bold text-green-600">
+              ₹{calculateTotalPrice(selectedSeats)}
+            </span>
+          </div>
+          <div className="text-xs text-gray-500">
+            {selectedSeats.join(", ")}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
