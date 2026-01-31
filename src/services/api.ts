@@ -38,6 +38,13 @@ interface FrappeResponse<T> {
   message: T;
 }
 
+export interface VerificationResponse {
+  success: boolean;
+  message: string;
+  customer?: string;
+  seats?: string;
+  event?: string;
+}
 /* =========================
    Mappers
 ========================= */
@@ -251,4 +258,23 @@ export async function getLockedSeats(scheduleId: string) {
   });
 
   return response.data.message || [];
+}
+
+
+
+/**
+ * Verifies a ticket ID and logs the entry in Frappe
+ * @param bookingId - The ID scanned from the QR code
+ */
+export async function verify_and_log_entry(
+  bookingId: string
+): Promise<VerificationResponse> {
+  const response = await axiosClient.post<FrappeResponse<VerificationResponse>>(
+    "/method/chavara_booking.api.ticket_verification.verify_and_log_entry",
+    {
+      booking_id: bookingId,
+    }
+  );
+
+  return response.data.message;
 }

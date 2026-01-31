@@ -5,6 +5,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { CheckCircle, Calendar, Clock, MapPin, Ticket, Download, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { axiosClient } from "@/lib/axios"; // Added axiosClient
 import { getBookingDetails } from "@/services/api";
 import { toast } from "sonner";
 
@@ -27,19 +28,25 @@ const BookingConfirmation = () => {
   const navigate = useNavigate();
   const [booking, setBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
+  const [secureQrData, setSecureQrData] = useState<string>(""); // New state for signed data
 
   useEffect(() => {
     const loadBooking = async () => {
       if (!bookingId) return;
       
       try {
-        console.log('Loading booking:', bookingId);
         const bookingData = await getBookingDetails(bookingId);
-        console.log('Booking data received:', bookingData);
         if (bookingData) {
           setBooking(bookingData);
+          
+          // --- NEW: Fetch Secure Signed QR String from Frappe ---
+          const qrRes = await axiosClient.get("/method/chavara_booking.api.booking.get_secure_qr_code", {
+            params: { booking_id: bookingId }
+          });
+          setSecureQrData(qrRes.data.message);
+          // -----------------------------------------------------
+          
         } else {
-          console.log('No booking data returned');
           toast.error("Booking not found");
         }
       } catch (error) {
@@ -81,13 +88,6 @@ const BookingConfirmation = () => {
       year: "numeric" 
     });
   };
-
-  const qrData = JSON.stringify({
-    bookingId: booking.booking_id,
-    eventTitle: booking.event_title,
-    seats: booking.seats,
-    date: booking.event_date,
-  });
 
   const handleDownloadQR = () => {
     const canvas = document.createElement("canvas");
@@ -197,19 +197,25 @@ const BookingConfirmation = () => {
                 </div>
               </div>
 
-              {/* QR Code */}
+              {/* QR Code Section - UPDATED TO USE SECURE DATA */}
               <div className="flex flex-col items-center justify-center space-y-4">
                 <div className="p-6 bg-white rounded-lg shadow-card">
-                  <QRCodeSVG
-                    id="qr-code"
-                    value={qrData}
-                    size={200}
-                    level="H"
-                    includeMargin
-                  />
+                  {secureQrData ? (
+                    <QRCodeSVG
+                      id="qr-code"
+                      value={secureQrData}
+                      size={200}
+                      level="H"
+                      includeMargin
+                    />
+                  ) : (
+                    <div className="w-[200px] h-[200px] flex items-center justify-center border-2 border-dashed rounded-md">
+                      <p className="text-xs text-muted-foreground animate-pulse">Generating Secure Ticket...</p>
+                    </div>
+                  )}
                 </div>
                 <p className="text-sm text-muted-foreground text-center max-w-xs">
-                  Show this QR code at the venue entrance for entry
+                  Show this secure QR code at the entrance
                 </p>
               </div>
             </div>
