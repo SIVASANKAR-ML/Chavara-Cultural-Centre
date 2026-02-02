@@ -208,43 +208,55 @@ const SeatSelector = ({
       <div className="w-full overflow-x-auto pb-8 px-2 scrollbar-hide touch-pan-x">
         <div className="min-w-fit flex flex-col items-center mx-auto space-y-2 xs:space-y-3">
           {Object.entries(SEAT_MAP).map(([row, blocks]) => (
-            <div 
-              key={row} 
-              className={cn(
-                "flex items-center gap-2 sm:gap-4",
-                row === 'J' && "mb-8",
-                row === 'K' && "mt-8"
-              )}
-            >
-              {/* LEFT ROW LABEL */}
-              <span className="w-4 text-center text-[10px] sm:text-sm text-gray-400 font-bold uppercase">{row}</span>
+  <div key={row}>
+    
+    {/* SEAT ROW — unchanged */}
+    <div className="flex items-center gap-2 sm:gap-4">
+      <span className="w-4 text-center text-[10px] sm:text-sm text-gray-400 font-bold uppercase">
+        {row}
+      </span>
 
-              {/* LEFT BLOCK */}
-              <div className="flex gap-1 sm:gap-2">
-                {row === 'A' && Array(7).fill(0).map((_, i) => (
-                  <div key={`pl-${i}`} className="w-6 h-6 xs:w-7 xs:h-7 sm:w-9 sm:h-9" />
-                ))}
-                {blocks.left.map(num => Seat(`${row}${num}`))}
-              </div>
+      <div className="flex gap-1 sm:gap-2">
+        {row === 'A' &&
+          Array(7).fill(0).map((_, i) => (
+            <div key={`pl-${i}`} className="w-6 h-6 sm:w-9 sm:h-9" />
+          ))
+        }
+        {blocks.left.map(num => Seat(`${row}${num}`))}
+      </div>
 
-              {/* MAIN AISLE */}
-              <div className="w-6 sm:w-10" />
+      <div className="w-6 sm:w-10" />
 
-              {/* RIGHT BLOCK */}
-              <div className="flex gap-1 sm:gap-2">
-                {blocks.right.map(num => Seat(`${row}${num}`))}
-                {row === 'A' && Array(3).fill(0).map((_, i) => (
-                  <div key={`pr-${i}`} className="w-6 h-6 xs:w-7 xs:h-7 sm:w-9 sm:h-9" />
-                ))}
-                {row === 'J' && Array(1).fill(0).map((_, i) => (
-                  <div key={`pr-${i}`} className="w-6 h-6 xs:w-7 xs:h-7 sm:w-9 sm:h-9" />
-                ))}
-              </div>
+      <div className="flex gap-1 sm:gap-2">
+        {blocks.right.map(num => Seat(`${row}${num}`))}
+        {row === 'A' &&
+          Array(3).fill(0).map((_, i) => (
+            <div key={`pr-${i}`} className="w-6 h-6 sm:w-9 sm:h-9" />
+          ))
+        }
+        {row === 'J' &&
+          Array(1).fill(0).map((_, i) => (
+            <div key={`pr-${i}`} className="w-6 h-6 sm:w-9 sm:h-9" />
+          ))
+        }
+      </div>
 
-              {/* RIGHT ROW LABEL */}
-              <span className="w-4 text-center text-[10px] sm:text-sm text-gray-400 font-bold uppercase">{row}</span>
-            </div>
-          ))}
+      <span className="w-4 text-center text-[10px] sm:text-sm text-gray-400 font-bold uppercase">
+        {row}
+      </span>
+    </div>
+
+    {/* ✅ REAL WALKWAY — DOES NOT TOUCH SEAT COLORS */}
+    {row === "J" && (
+      <div className="h-16 flex items-center justify-center">
+        <div className="w-full border-t border-dashed border-gray-300 text-[10px] text-gray-400 text-center">
+          WALKWAY
+        </div>
+      </div>
+    )}
+  </div>
+))}
+
         </div>
       </div>
 

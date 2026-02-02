@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import SeatSelector from "@/components/SeatSelector";
+import { TermsAndConditionsModal } from "@/components/TermsAndConditionsModal";
 import { fetchEventById, createBooking, getBookedSeats, lockSeats, getLockedSeats, type ChavaraEvent } from "@/services/api";
 import { toast } from "sonner";
 
@@ -27,6 +28,7 @@ const SeatBooking = () => {
   const [bookedSeats, setBookedSeats] = useState<string[]>([]);
   const [lockedSeats, setLockedSeats] = useState<string[]>([]);
   const [isBooking, setIsBooking] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
   
   // Customer details
   const [customerName, setCustomerName] = useState("");
@@ -127,7 +129,8 @@ const SeatBooking = () => {
     }
     
     if (currentStep.step === 1) {
-      setCurrentStep({ step: 2, title: "Customer Details" });
+      // Show T&C modal instead of directly proceeding
+      setShowTermsModal(true);
       return;
     }
     
@@ -177,6 +180,15 @@ const SeatBooking = () => {
     } finally {
       setIsBooking(false);
     }
+  };
+
+  const handleAcceptTerms = () => {
+    setShowTermsModal(false);
+    setCurrentStep({ step: 2, title: "Customer Details" });
+  };
+
+  const handleDeclineTerms = () => {
+    setShowTermsModal(false);
   };
 
   if (loading) {
@@ -421,6 +433,13 @@ const SeatBooking = () => {
           </div>
         </div>
       </div>
+
+      {/* Terms and Conditions Modal */}
+      <TermsAndConditionsModal
+        open={showTermsModal}
+        onAccept={handleAcceptTerms}
+        onCancel={handleDeclineTerms}
+      />
     </div>
   );
 };

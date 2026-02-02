@@ -200,7 +200,7 @@ const Events = () => {
                           className="absolute inset-0 z-10"
                         >
                           <iframe
-                            src={`${video.videoUrl}?autoplay=1`}
+                            src={video.videoUrl}
                             title={video.title}
                             className="w-full h-full"
                             allowFullScreen
@@ -258,7 +258,7 @@ const Events = () => {
 
                       <div className="aspect-video">
                         <iframe
-                          src={`${selectedVideo.videoUrl}?autoplay=1`}
+                          src={selectedVideo.videoUrl}
                           title={selectedVideo.title}
                           className="w-full h-full"
                           allowFullScreen
