@@ -1,4 +1,5 @@
 import { axiosClient } from "@/lib/axios";
+import axios from "axios";
 
 /* =========================
    Types & Interfaces
@@ -263,9 +264,59 @@ export async function getLockedSeats(scheduleId: string) {
 
 
 /**
- * Verifies a ticket ID and logs the entry in Frappe
- * @param bookingId - The ID scanned from the QR code
+ * Fetches a CSRF token from the server.
+ * This is REQUIRED for the login POST request to work.
  */
+export async function ensureCSRFToken() {
+  try {
+    // Calling the guest-allowed method we created in the Python seat_lock.py
+    const response = await axios.get('/api/method/chavara_booking.api.seat_lock.get_guest_csrf_token', { withCredentials: true });
+    const token = response.data.message;
+    if (token) {
+      axiosClient.defaults.headers.common['X-Frappe-CSRF-Token'] = token;
+    }
+    return token;
+  } catch (error) {
+    console.error("CSRF Fetch Error:", error);
+    return null;
+  }
+}
+
+/**
+ * Checks if the currently logged-in user has scanning permissions.
+ */
+export async function checkScannerAccess(): Promise<boolean> {
+  try {
+    const response = await axiosClient.get("/method/chavara_booking.api.ticket_verification.check_scanner_access");
+    return response.data.message === true;
+  } catch (error) {
+    return false;
+  }
+}
+
+/* =========================
+   Existing Functions
+========================= */
+
+export async function login(usr: string, pwd: string) {
+  // Pass a simple object. The interceptor will turn this into Form Data.
+  const response = await axiosClient.post("/method/login", {
+    usr: usr,
+    pwd: pwd,
+  });
+  
+  if (response.status === 200) {
+    localStorage.setItem("user_id", response.data.full_name || usr);
+    return response.data;
+  }
+  return null;
+}
+export async function logout() {
+  await axiosClient.post("/method/logout");
+  localStorage.clear();
+  window.location.href = "/login";
+}
+
 export async function verify_and_log_entry(
   bookingId: string
 ): Promise<VerificationResponse> {

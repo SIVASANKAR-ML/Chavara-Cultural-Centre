@@ -1,9 +1,11 @@
 import { useState, ChangeEvent, FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner"; // Added toast
+import { login, ensureCSRFToken, checkScannerAccess } from "@/services/api"; // Added API imports
 
 interface LoginForm {
   email: string;
@@ -14,20 +16,47 @@ const Login: React.FC = () => {
   const [form, setForm] = useState<LoginForm>({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate(); // Hook for redirection
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  // --- UPDATED LOGIC ---
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
-    setTimeout(() => {
-      console.log("Login attempted:", form);
+    try {
+      // 1. Get a fresh CSRF token before attempting login
+      await ensureCSRFToken();
+
+      // 2. Call the Frappe login method
+      const loginSuccess = await login(form.email, form.password);
+
+      if (loginSuccess) {
+        // 3. Check if the user has staff permissions
+        const isStaff = await checkScannerAccess();
+        
+        toast.success("Welcome back!");
+
+        // 4. Redirect based on role
+        if (isStaff) {
+          navigate("/verify"); // Go to scanner if staff
+        } else {
+          navigate("/"); // Go to home if customer
+        }
+      }
+    } catch (error: any) {
+      console.error("Login error:", error);
+      // Handle Frappe error messages
+      const errorMsg = error.response?.data?.message || "Invalid email or password";
+      toast.error(errorMsg);
+    } finally {
       setLoading(false);
-    }, 2500);
+    }
   };
+  // ---------------------
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black">

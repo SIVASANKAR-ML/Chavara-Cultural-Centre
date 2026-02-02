@@ -1,27 +1,45 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Menu, X, User, Scan, ChevronDown } from "lucide-react";
+import { Menu, X, User, Scan, ChevronDown, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import logo from "@/assets/logo.png";
+import { checkScannerAccess, logout } from "@/services/api"; // Added these imports
 
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showScrollIcon, setShowScrollIcon] = useState(true);
+  
+  // NEW: State to track if user is staff
+  const [isStaff, setIsStaff] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
       setShowScrollIcon(window.scrollY < 100);
     };
+
+    // NEW: Check if user is staff on mount and when location changes
+    const verifyUser = async () => {
+      const staffStatus = await checkScannerAccess();
+      setIsStaff(staffStatus);
+      setIsLoggedIn(!!localStorage.getItem("user_id"));
+    };
+
+    verifyUser();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [location]); // Re-verify whenever the page changes
 
-  const handleScrollDown = () => {
-    window.scrollBy({ top: 300, behavior: "smooth" });
+  const handleLogout = async () => {
+    await logout();
+    setIsStaff(false);
+    setIsLoggedIn(false);
+    navigate("/login");
   };
 
   const navItems = [
@@ -59,7 +77,7 @@ const Navbar = () => {
                 isScrolled ? "text-foreground" : "text-primary-foreground"
               }`}
             >
-              Chavara Cultural Center
+              Chavara
             </motion.div>
           </Link>
 
@@ -84,50 +102,53 @@ const Navbar = () => {
                 }`}
               >
                 {item.name}
-                {isActive(item.path) && (
-                  <motion.div
-                    layoutId="navbar-indicator"
-                    className={`absolute -bottom-[21px] left-0 right-0 h-0.5 ${
-                      isScrolled ? "bg-primary" : "bg-white"
-                    }`}
-                  />
-                )}
               </Link>
             ))}
 
-            {/* LOGIN */}
-            <Link
-              to="/login"
-              className={`p-2 rounded-full transition-colors ${
-                isScrolled ? "hover:bg-gray-100" : "hover:bg-white/10"
-              }`}
-              title="Login"
-            >
-              <User
-                className={`h-6 w-6 ${
-                  isScrolled
-                    ? "text-muted-foreground hover:text-primary"
-                    : "text-primary-foreground hover:text-white"
+            {/* SCAN ICON (VISIBLE ONLY FOR STAFF) */}
+            {isStaff && (
+              <Link
+                to="/verify"
+                className={`p-2 rounded-full transition-colors flex items-center gap-2 ${
+                  isScrolled ? "hover:bg-orange-100" : "hover:bg-white/10"
                 }`}
-              />
-            </Link>
+                title="Staff Scanner"
+              >
+                <Scan
+                  className={`h-6 w-6 ${
+                    isScrolled ? "text-orange-600" : "text-white"
+                  }`}
+                />
+                <span className={`text-xs font-bold uppercase ${isScrolled ? 'text-orange-600' : 'text-white'}`}>Scanner</span>
+              </Link>
+            )}
 
-            {/* SCAN ICON (AFTER LOGIN) */}
-            <Link
-              to="/verify"
-              className={`p-2 rounded-full transition-colors ${
-                isScrolled ? "hover:bg-gray-100" : "hover:bg-white/10"
-              }`}
-              title="Scan QR"
-            >
-              <Scan
-                className={`h-6 w-6 ${
-                  isScrolled
-                    ? "text-muted-foreground hover:text-primary"
-                    : "text-primary-foreground hover:text-white"
+            {/* LOGIN / LOGOUT */}
+            {isLoggedIn ? (
+              <button
+                onClick={handleLogout}
+                className={`p-2 rounded-full transition-colors ${
+                  isScrolled ? "hover:bg-red-50 text-red-500" : "hover:bg-white/10 text-white"
                 }`}
-              />
-            </Link>
+                title="Logout"
+              >
+                <LogOut className="h-6 w-6" />
+              </button>
+            ) : (
+              <Link
+                to="/login"
+                className={`p-2 rounded-full transition-colors ${
+                  isScrolled ? "hover:bg-gray-100" : "hover:bg-white/10"
+                }`}
+                title="Login"
+              >
+                <User
+                  className={`h-6 w-6 ${
+                    isScrolled ? "text-muted-foreground" : "text-primary-foreground"
+                  }`}
+                />
+              </Link>
+            )}
           </div>
 
           {/* MOBILE MENU BUTTON */}
@@ -139,32 +160,6 @@ const Navbar = () => {
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
-
-          {/* SCROLL DOWN ICON - Mobile only */}
-          {showScrollIcon && (
-            <motion.button
-              onClick={handleScrollDown}
-              className="md:hidden p-2 rounded-full transition-colors"
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0 }}
-              transition={{ type: "spring", stiffness: 200, damping: 20 }}
-              title="Scroll down"
-            >
-              <motion.div
-                animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
-              >
-                <ChevronDown
-                  className={`h-5 w-5 ${
-                    isScrolled
-                      ? "text-muted-foreground hover:text-primary"
-                      : "text-primary-foreground hover:text-white"
-                  }`}
-                />
-              </motion.div>
-            </motion.button>
-          )}
         </div>
 
         {/* MOBILE MENU */}
@@ -172,60 +167,50 @@ const Navbar = () => {
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="md:hidden border-t bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 py-4"
+            className="md:hidden border-t bg-slate-900 py-4"
           >
-            {navItems.map((item, index) => (
-              <motion.div
+            {navItems.map((item) => (
+              <Link
                 key={item.path}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
+                to={item.path}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-3 text-slate-100 border-b border-slate-800"
               >
-                <Link
-                  to={item.path}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`block px-4 py-3 font-medium transition-all duration-300 rounded-lg mx-2 my-1 ${
-                    isActive(item.path)
-                      ? "bg-blue-500 text-white shadow-lg shadow-blue-500/50"
-                      : "text-slate-100 hover:bg-slate-700/50 hover:text-blue-400"
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              </motion.div>
+                {item.name}
+              </Link>
             ))}
 
-            {/* LOGIN */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: navItems.length * 0.1 }}
-            >
-              <Link
-                to="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-2 px-4 py-3 font-medium transition-all duration-300 rounded-lg mx-2 my-1 text-slate-100 hover:bg-emerald-500/20 hover:text-emerald-400"
-              >
-                <User className="h-5 w-5" />
-                Login
-              </Link>
-            </motion.div>
-
-            {/* SCAN */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: (navItems.length + 1) * 0.1 }}
-            >
+            {/* SCAN (MOBILE - STAFF ONLY) */}
+            {isStaff && (
               <Link
                 to="/verify"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-2 px-4 py-3 font-medium transition-all duration-300 rounded-lg mx-2 my-1 text-slate-100 hover:bg-purple-500/20 hover:text-purple-400"
+                className="flex items-center gap-2 px-4 py-3 font-medium text-orange-400 bg-orange-500/10"
               >
                 <Scan className="h-5 w-5" />
-                Scan QR
+                Staff Gate Scanner
               </Link>
-            </motion.div>
+            )}
+
+            {/* LOGIN / LOGOUT (MOBILE) */}
+            {isLoggedIn ? (
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-2 px-4 py-3 font-medium text-red-400"
+              >
+                <LogOut className="h-5 w-5" />
+                Logout
+              </button>
+            ) : (
+              <Link
+                to="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2 px-4 py-3 font-medium text-slate-100"
+              >
+                <User className="h-5 w-5" />
+                Staff Login
+              </Link>
+            )}
           </motion.div>
         )}
       </div>
