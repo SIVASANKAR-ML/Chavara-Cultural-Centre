@@ -54,14 +54,15 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`sticky top-0 z-50 border-b transition-all duration-300 ${
-        isScrolled
-          ? "border-border bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60"
-          : "border-primary-foreground/20 bg-gradient-hero"
-      } ${showScrollIcon ? "pb-4 md:pb-0" : ""}`}
-    >
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
+  className={`fixed top-0 left-0 right-0 w-full z-50 border-b transition-all duration-300 ${
+    isScrolled
+      ? "border-border bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60"
+      : "border-primary-foreground/20 bg-gradient-hero"
+  } ${showScrollIcon ? "pb-4 md:pb-0" : ""}`}
+>
+      <div className="w-full">
+        <div className="container mx-auto px-4">
+          <div className="flex h-16 items-center justify-between">
 
           {/* LOGO */}
           <Link to="/" className="flex items-center gap-3">
@@ -167,7 +168,7 @@ const Navbar = () => {
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="md:hidden border-t bg-slate-900 py-4"
+            className="md:hidden border-t bg-slate-900 py-4 w-screen -ml-4"
           >
             {navItems.map((item) => (
               <Link
@@ -213,6 +214,7 @@ const Navbar = () => {
             )}
           </motion.div>
         )}
+        </div>
       </div>
     </nav>
   );

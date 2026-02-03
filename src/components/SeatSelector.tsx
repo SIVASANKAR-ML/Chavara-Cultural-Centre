@@ -150,7 +150,7 @@ const SeatSelector = ({
         disabled={status === "booked" || status === "locked"}
         onClick={() => toggleSeat(seatId)}
         className={cn(
-          "w-6 h-6 xs:w-7 xs:h-7 sm:w-9 sm:h-9 rounded-full text-[8px] xs:text-[10px] sm:text-sm border-2 font-semibold flex items-center justify-center shrink-0 transition-all",
+          "w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 rounded-full text-[7px] sm:text-[8px] md:text-xs border-2 font-semibold flex items-center justify-center shrink-0 transition-all",
           status === "booked" && "bg-gray-100 border-gray-200 text-gray-300 cursor-not-allowed",
           status === "locked" && "bg-yellow-100 border-yellow-300 text-yellow-600 cursor-not-allowed",
           status === "selected" && colors?.selected,
@@ -179,24 +179,24 @@ const SeatSelector = ({
       
       {/* NEW: Price legend at the top */}
       {rowPricing.length > 0 && (
-        <div className="w-full max-w-2xl mb-6 px-4">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">Pricing by Row</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="w-full max-w-4xl mb-6 px-3">
+          <h3 className="text-xs sm:text-sm font-semibold text-gray-700 mb-2">Pricing by Row</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {rowGroupPricing.map(({ group, price }) => (
               <div 
                 key={group}
-                className="flex items-center gap-2 p-2 rounded-lg border bg-white"
+                className="flex items-center gap-1.5 p-1.5 sm:p-2 rounded-lg border bg-white"
               >
                 <div className={cn(
-                  "w-4 h-4 rounded-full border-2",
+                  "w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2",
                   ROW_COLORS[group].available.includes("red") && "border-red-500",
                   ROW_COLORS[group].available.includes("purple") && "border-purple-500",
                   ROW_COLORS[group].available.includes("green") && "border-green-500",
                   ROW_COLORS[group].available.includes("blue") && "border-blue-500"
                 )} />
-                <div className="text-xs">
+                <div className="text-[10px] sm:text-xs">
                   <div className="font-semibold text-gray-700">{group}</div>
-                  <div className="text-gray-500">₹{price}</div>
+                  <div className="text-gray-500 text-[9px] sm:text-[10px]">₹{price}</div>
                 </div>
               </div>
             ))}
@@ -206,42 +206,42 @@ const SeatSelector = ({
 
       {/* SEATING AREA */}
       <div className="w-full overflow-x-auto pb-8 px-2 scrollbar-hide touch-pan-x">
-        <div className="min-w-fit flex flex-col items-center mx-auto space-y-2 xs:space-y-3">
+        <div className="min-w-fit flex flex-col items-center mx-auto space-y-1 sm:space-y-2">
           {Object.entries(SEAT_MAP).map(([row, blocks]) => (
   <div key={row}>
     
     {/* SEAT ROW — unchanged */}
-    <div className="flex items-center gap-2 sm:gap-4">
-      <span className="w-4 text-center text-[10px] sm:text-sm text-gray-400 font-bold uppercase">
+    <div className="flex items-center gap-1 sm:gap-2 md:gap-4">
+      <span className="w-3 sm:w-4 text-center text-[8px] sm:text-[10px] md:text-sm text-gray-400 font-bold uppercase">
         {row}
       </span>
 
-      <div className="flex gap-1 sm:gap-2">
+      <div className="flex gap-0.5 sm:gap-1 md:gap-2">
         {row === 'A' &&
           Array(7).fill(0).map((_, i) => (
-            <div key={`pl-${i}`} className="w-6 h-6 sm:w-9 sm:h-9" />
+            <div key={`pl-${i}`} className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" />
           ))
         }
         {blocks.left.map(num => Seat(`${row}${num}`))}
       </div>
 
-      <div className="w-6 sm:w-10" />
+      <div className="w-3 sm:w-5 md:w-10" />
 
-      <div className="flex gap-1 sm:gap-2">
+      <div className="flex gap-0.5 sm:gap-1 md:gap-2">
         {blocks.right.map(num => Seat(`${row}${num}`))}
         {row === 'A' &&
           Array(3).fill(0).map((_, i) => (
-            <div key={`pr-${i}`} className="w-6 h-6 sm:w-9 sm:h-9" />
+            <div key={`pr-${i}`} className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" />
           ))
         }
         {row === 'J' &&
           Array(1).fill(0).map((_, i) => (
-            <div key={`pr-${i}`} className="w-6 h-6 sm:w-9 sm:h-9" />
+            <div key={`pr-${i}`} className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8" />
           ))
         }
       </div>
 
-      <span className="w-4 text-center text-[10px] sm:text-sm text-gray-400 font-bold uppercase">
+      <span className="w-3 sm:w-4 text-center text-[8px] sm:text-[10px] md:text-sm text-gray-400 font-bold uppercase">
         {row}
       </span>
     </div>
@@ -261,36 +261,36 @@ const SeatSelector = ({
       </div>
 
       {/* SCREEN SECTION */}
-      <div className="w-full max-w-sm sm:max-w-md mt-6 px-4">
+      <div className="w-full max-w-sm sm:max-w-md mt-4 sm:mt-6 px-4">
         <div className="flex flex-col items-center">
-          <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-2">All eyes this way</p>
+          <p className="text-[8px] sm:text-[10px] uppercase tracking-widest text-gray-400 mb-2">All eyes this way</p>
           <div className="relative w-full h-2">
             <div className="absolute inset-0 bg-gray-200 rounded-[100%] scale-y-50 shadow-[0_-15px_30px_rgba(0,0,0,0.05)]" />
           </div>
-          <p className="text-[10px] text-gray-300 mt-4">Screen</p>
+          <p className="text-[8px] sm:text-[10px] text-gray-300 mt-2">Screen</p>
         </div>
       </div>
 
       {/* LEGEND */}
-      <div className="flex gap-6 mt-10 text-[10px] sm:text-xs text-gray-500 font-medium">
-        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full border border-green-500" /> Available</div>
-        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-green-500" /> Selected</div>
-        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-yellow-100 border border-yellow-300" /> Locked</div>
-        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-gray-200" /> Sold</div>
+      <div className="grid grid-cols-2 sm:flex gap-2 sm:gap-4 mt-6 text-[8px] sm:text-[10px] text-gray-500 font-medium px-4">
+        <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full border border-green-500" /> Available</div>
+        <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-green-500" /> Selected</div>
+        <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-yellow-100 border border-yellow-300" /> Locked</div>
+        <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-gray-200" /> Sold</div>
       </div>
 
       {/* NEW: Selected seats summary */}
       {selectedSeats.length > 0 && (
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg w-full max-w-md">
+        <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-gray-50 rounded-lg w-full max-w-md mx-4">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-semibold text-gray-700">
+            <span className="text-xs sm:text-sm font-semibold text-gray-700">
               Selected Seats ({selectedSeats.length})
             </span>
-            <span className="text-lg font-bold text-green-600">
+            <span className="text-base sm:text-lg font-bold text-green-600">
               ₹{calculateTotalPrice(selectedSeats)}
             </span>
           </div>
-          <div className="text-xs text-gray-500">
+          <div className="text-[10px] sm:text-xs text-gray-500 break-words">
             {selectedSeats.join(", ")}
           </div>
         </div>
