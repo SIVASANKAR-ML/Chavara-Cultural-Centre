@@ -1,11 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
-import { CheckCircle, Calendar, Clock, MapPin, Ticket, Download, Home } from "lucide-react";
+import html2canvas from 'html2canvas'; 
+import { 
+  CheckCircle, 
+  Calendar, 
+  Clock, 
+  MapPin, 
+  Ticket, 
+  Download, 
+  Home, 
+  User,
+  CreditCard,
+  Loader2
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { axiosClient } from "@/lib/axios"; // Added axiosClient
+import { axiosClient } from "@/lib/axios"; 
 import { getBookingDetails } from "@/services/api";
 import { toast } from "sonner";
 
@@ -21,240 +33,241 @@ interface Booking {
   total_amount: number;
   booking_date: string;
   status: string;
+  event_image?: string; // Real image from Frappe
+  venue?: string;
 }
 
 const BookingConfirmation = () => {
   const { bookingId } = useParams();
   const navigate = useNavigate();
+  const ticketRef = useRef<HTMLDivElement>(null); 
   const [booking, setBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
-  const [secureQrData, setSecureQrData] = useState<string>(""); // New state for signed data
+  const [secureQrData, setSecureQrData] = useState<string>(""); 
 
   useEffect(() => {
     const loadBooking = async () => {
       if (!bookingId) return;
-      
       try {
         const bookingData = await getBookingDetails(bookingId);
         if (bookingData) {
           setBooking(bookingData);
           
-          // --- NEW: Fetch Secure Signed QR String from Frappe ---
+          // Fetch the secure QR string
           const qrRes = await axiosClient.get("/method/chavara_booking.api.booking.get_secure_qr_code", {
             params: { booking_id: bookingId }
           });
-          setSecureQrData(qrRes.data.message);
-          // -----------------------------------------------------
           
-        } else {
-          toast.error("Booking not found");
+          if (typeof qrRes.data.message === 'string') {
+            setSecureQrData(qrRes.data.message);
+          }
         }
       } catch (error) {
-        console.error("Failed to load booking:", error);
-        toast.error("Failed to load booking details");
+        console.error("Error loading ticket:", error);
+        toast.error("Failed to load ticket details");
       } finally {
         setLoading(false);
       }
     };
-    
     loadBooking();
   }, [bookingId]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="animate-pulse text-primary font-bold">Loading booking details...</p>
-      </div>
-    );
-  }
+  // High-quality PNG Download logic
+  const handleDownloadPNG = async () => {
+    if (!ticketRef.current) return;
+    
+    const toastId = toast.loading("Generating high-quality ticket...");
+    
+    try {
+      const canvas = await html2canvas(ticketRef.current, {
+        scale: 3, // Sharp resolution for scanning
+        useCORS: true, // Crucial: Allows capturing images from your Frappe server
+        backgroundColor: "#f1f5f9", // bg-slate-100 fallback
+        logging: false,
+      });
+      
+      const image = canvas.toDataURL("image/png", 1.0);
+      const link = document.createElement("a");
+      link.download = `Ticket-${booking?.booking_id}.png`;
+      link.href = image;
+      link.click();
+      
+      toast.success("Ticket saved to gallery!", { id: toastId });
+    } catch (err) {
+      console.error("Download Error:", err);
+      toast.error("Generation failed. Please try a screenshot.", { id: toastId });
+    }
+  };
 
-  if (!booking) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-foreground mb-4">Booking Not Found</h2>
-          <Button onClick={() => navigate("/")}>Back to Home</Button>
-        </div>
+  if (loading) return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 gap-4">
+      <Loader2 className="h-10 w-10 animate-spin text-primary" />
+      <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Securing your entry pass...</p>
+    </div>
+  );
+
+  if (!booking) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center space-y-4">
+        <h2 className="text-xl font-bold">Booking Not Found</h2>
+        <Button onClick={() => navigate("/")}>Go Home</Button>
       </div>
-    );
-  }
+    </div>
+  );
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString("en-US", { 
-      weekday: "long",
-      month: "long", 
-      day: "numeric", 
-      year: "numeric" 
-    });
-  };
-
-  const handleDownloadQR = () => {
-    const canvas = document.createElement("canvas");
-    const svg = document.querySelector("#qr-code") as SVGElement;
-    if (!svg) return;
-
-    const svgData = new XMLSerializer().serializeToString(svg);
-    const img = new Image();
-    const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
-    const url = URL.createObjectURL(svgBlob);
-
-    img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.drawImage(img, 0, 0);
-        const pngUrl = canvas.toDataURL("image/png");
-        const downloadLink = document.createElement("a");
-        downloadLink.href = pngUrl;
-        downloadLink.download = `ticket-${booking.booking_id}.png`;
-        downloadLink.click();
-      }
-      URL.revokeObjectURL(url);
-    };
-    img.src = url;
+    return date.toLocaleDateString("en-US", { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
   };
 
   return (
-    <div className="min-h-screen py-12">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          {/* Success Message */}
-          <div className="text-center mb-8">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="inline-block mb-4"
-            >
-              <CheckCircle className="h-20 w-20 text-primary" />
-            </motion.div>
-            <h1 className="font-display font-bold text-3xl md:text-4xl text-foreground mb-2">
-              Booking Confirmed!
-            </h1>
-            <p className="font-body text-muted-foreground text-lg">
-              Your tickets have been successfully booked
-            </p>
-          </div>
+    <div className="min-h-screen bg-slate-100 py-8 md:py-12">
+      <div className="container mx-auto px-4 max-w-2xl">
+        
+        {/* PAGE HEADER */}
+        <div className="text-center mb-8">
+            <div className="inline-flex p-2 bg-green-100 rounded-full mb-3">
+                <CheckCircle className="h-8 w-8 text-green-600" />
+            </div>
+            <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Booking Confirmed</h1>
+            <p className="text-slate-500 text-sm font-medium">Please present this digital pass at the gate.</p>
+        </div>
 
-          {/* Ticket Card */}
-          <Card className="p-8 shadow-elegant mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Booking Details */}
-              <div className="space-y-6">
-                <div>
-                  <p className="font-subheading text-sm text-muted-foreground mb-1">Booking ID</p>
-                  <p className="font-mono font-bold text-xl text-primary">{booking.booking_id}</p>
+        {/* TICKET FOR CAPTURE */}
+        <div ref={ticketRef} className="p-4 rounded-3xl"> 
+          <motion.div 
+            initial={{ y: 20, opacity: 0 }} 
+            animate={{ y: 0, opacity: 1 }}
+            className="relative"
+          >
+            {/* TOP CARD: EVENT BANNER & INFO */}
+            <Card className="rounded-t-[32px] rounded-b-none border-none shadow-xl overflow-hidden bg-white">
+              <div className="relative h-52 w-full bg-slate-200">
+                <img 
+                  // DYNAMIC IMAGE FROM BACKEND
+                  src={booking.event_image || 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800'} 
+                  crossOrigin="anonymous" 
+                  className="w-full h-full object-cover" 
+                  alt={booking.event_title}
+                  onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800';
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                <div className="absolute bottom-6 left-8 right-8">
+                  <p className="text-primary text-[10px] font-black uppercase tracking-[0.2em] mb-1">Confirmed Event</p>
+                  <h2 className="text-white text-3xl font-black uppercase tracking-tighter leading-none truncate">
+                      {booking.event_title}
+                  </h2>
                 </div>
+              </div>
 
-                <div>
-                  <p className="font-subheading text-sm text-muted-foreground mb-1">Event</p>
-                  <p className="font-display font-bold text-xl text-foreground">{booking.event_title}</p>
+              <div className="p-8 space-y-6">
+                <div className="grid grid-cols-2 gap-8">
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                          <Calendar size={12}/> Date
+                      </p>
+                      <p className="font-bold text-slate-800 text-lg">{formatDate(booking.event_date)}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                          <Clock size={12}/> Time
+                      </p>
+                      <p className="font-bold text-slate-800 text-lg">{booking.event_time}</p>
+                    </div>
                 </div>
+                <div className="space-y-1">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                      <MapPin size={12}/> Venue Location
+                    </p>
+                    <p className="font-bold text-slate-700">{booking.venue || "Chavara Cultural Centre, Kochi"}</p>
+                </div>
+              </div>
+            </Card>
 
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-primary/10 rounded-lg">
-                      <Calendar className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-subheading text-sm text-muted-foreground">Date</p>
-                      <p className="font-heading font-semibold text-foreground">{formatDate(booking.event_date)}</p>
-                    </div>
+            {/* PERFORATED CUT LINE */}
+            <div className="relative h-8 bg-white flex items-center justify-between overflow-hidden">
+              <div className="absolute -left-4 w-8 h-8 bg-slate-100 rounded-full shadow-inner" />
+              <div className="w-full border-t-2 border-dashed border-slate-200 mx-6" />
+              <div className="absolute -right-4 w-8 h-8 bg-slate-100 rounded-full shadow-inner" />
+            </div>
+
+            {/* BOTTOM CARD: QR CODE & SEATS */}
+            <Card className="rounded-b-[32px] rounded-t-none border-none shadow-xl bg-white p-8">
+              <div className="flex flex-col md:flex-row items-center gap-10">
+                  {/* QR SECTION */}
+                  <div className="bg-white p-3 border-2 border-slate-50 rounded-2xl shadow-inner">
+                    {secureQrData ? (
+                        <QRCodeSVG value={secureQrData} size={160} level="H" includeMargin />
+                    ) : (
+                        <div className="w-[160px] h-[160px] flex items-center justify-center bg-slate-50 animate-pulse rounded-lg">
+                           <span className="text-[10px] text-slate-300 font-bold uppercase">Signing...</span>
+                        </div>
+                    )}
                   </div>
 
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-primary/10 rounded-lg">
-                      <Clock className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-subheading text-sm text-muted-foreground">Time</p>
-                      <p className="font-heading font-semibold text-foreground">{booking.event_time}</p>
-                    </div>
+                  {/* SEAT INFO */}
+                  <div className="flex-1 w-full space-y-5 text-center md:text-left">
+                      <div className="bg-orange-50 p-5 rounded-2xl border border-orange-100">
+                          <p className="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-1">
+                             Your Assigned Seats
+                          </p>
+                          <p className="text-4xl font-black text-orange-600 tracking-tighter">
+                              {booking.seats.join(", ")}
+                          </p>
+                      </div>
+                      
+                      <div className="flex justify-between md:justify-start md:gap-12 px-2">
+                          <div>
+                              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Order ID</p>
+                              <p className="font-mono text-xs font-bold text-slate-600">{booking.booking_id}</p>
+                          </div>
+                          <div>
+                              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Transaction</p>
+                              <p className="text-sm font-black text-slate-800">₹{booking.total_amount}</p>
+                          </div>
+                      </div>
                   </div>
-
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-primary/10 rounded-lg">
-                      <Ticket className="h-5 w-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-subheading text-sm text-muted-foreground">Seats</p>
-                      <p className="font-heading font-semibold text-foreground">{booking.seats.join(", ")}</p>
-                    </div>
-                  </div>
-                </div>
+              </div>
 
                 <div className="pt-4 border-t border-border">
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Total Amount Paid</span>
                     <span className="font-bold text-2xl text-primary">₹{booking.total_amount}</span>
-                    
                   </div>
-                </div>
+                  <div className="flex items-center gap-2 px-3 py-1 bg-green-50 rounded-full border border-green-100">
+                      <CreditCard size={12} className="text-green-600"/>
+                      <p className="text-[10px] font-black text-green-600 uppercase">Verified Entry Pass</p>
+                  </div>
               </div>
+            </Card>
+          </motion.div>
+        </div>
 
-              {/* QR Code Section - UPDATED TO USE SECURE DATA */}
-              <div className="flex flex-col items-center justify-center space-y-4">
-                <div className="p-6 bg-white rounded-lg shadow-card">
-                  {secureQrData ? (
-                    <QRCodeSVG
-                      id="qr-code"
-                      value={secureQrData}
-                      size={200}
-                      level="H"
-                      includeMargin
-                    />
-                  ) : (
-                    <div className="w-[200px] h-[200px] flex items-center justify-center border-2 border-dashed rounded-md">
-                      <p className="text-xs text-muted-foreground animate-pulse">Generating Secure Ticket...</p>
-                    </div>
-                  )}
-                </div>
-                <p className="text-sm text-muted-foreground text-center max-w-xs">
-                  Show this secure QR code at the entrance
-                </p>
-              </div>
-            </div>
-          </Card>
-
-          {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              onClick={handleDownloadQR}
-              variant="outline"
-              size="lg"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+        {/* INTERACTIVE BUTTONS */}
+        <div className="mt-8 flex flex-col sm:flex-row gap-4">
+            <Button 
+              variant="outline" 
+              className="flex-1 h-14 rounded-2xl border-2 border-primary text-primary font-black active:scale-95 transition-transform"
+              onClick={handleDownloadPNG}
             >
-              <Download className="mr-2 h-5 w-5" />
-              Download QR Code
+                <Download className="mr-2 h-5 w-5" /> DOWNLOAD PNG
             </Button>
-            <Button
+            <Button 
+              className="flex-1 h-14 rounded-2xl font-black shadow-lg shadow-primary/20 active:scale-95 transition-transform"
               onClick={() => navigate("/")}
-              size="lg"
-              className="bg-primary hover:bg-primary/90"
             >
-              <Home className="mr-2 h-5 w-5" />
-              Back to Home
+                <Home className="mr-2 h-5 w-5" /> FINISH
             </Button>
-          </div>
+        </div>
 
-          {/* Important Information */}
-          <Card className="mt-8 p-6 bg-muted/30">
-            <h3 className="font-heading font-semibold text-foreground mb-3">Important Information</h3>
-            <ul className="font-body space-y-2 text-sm text-muted-foreground">
-              <li>• Please arrive at least 30 minutes before the event start time</li>
-              <li>• Carry a valid ID proof for verification</li>
-              <li>• This QR code is your entry ticket - keep it safe</li>
-              <li>• Photography and videography may be restricted during the performance</li>
-              <li>• Seats are non-transferable and non-refundable</li>
-            </ul>
-          </Card>
-        </motion.div>
+        <div className="mt-10 px-6 text-center">
+            <p className="text-[10px] text-slate-400 leading-relaxed font-medium italic">
+                * This is a digital entry ticket. You can present this PNG image at the venue gates. 
+                Unique verification hash included. Duplication is strictly prohibited.
+            </p>
+        </div>
       </div>
     </div>
   );

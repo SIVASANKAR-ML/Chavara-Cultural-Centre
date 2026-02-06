@@ -30,33 +30,22 @@ export async function getCSRFToken() {
 // Interceptor to handle Tokens and Data Formatting
 axiosClient.interceptors.request.use(async (config: any) => {
   if (config.method === "post") {
-    // 1. Handle CSRF Token
+    // 1. Get Token
     const token = await getCSRFToken();
     if (token) {
       config.headers["X-Frappe-CSRF-Token"] = token;
     }
 
-    // 2. Handle Data Formatting (Fixes the Content-Length: 0 issue)
-    // We only transform if data is a plain object. 
-    // If it's already URLSearchParams or FormData, we leave it alone.
-    if (
-      config.data &&
-      typeof config.data === "object" &&
-      !(config.data instanceof URLSearchParams) &&
-      !(config.data instanceof FormData)
-    ) {
-      config.headers["Content-Type"] = "application/x-www-form-urlencoded";
-      
+    // 2. Ensure data is formatted as Form Data for Frappe whitelisted methods
+    if (config.data && typeof config.data === "object" && !(config.data instanceof URLSearchParams)) {
       const params = new URLSearchParams();
-      for (const [key, value] of Object.entries(config.data)) {
-        // Convert arrays or objects to strings so Frappe can read them
-        const val = typeof value === "object" ? JSON.stringify(value) : String(value);
-        params.append(key, val);
-      }
+      Object.entries(config.data).forEach(([key, value]) => {
+        params.append(key, String(value));
+      });
       config.data = params;
+      // Set the header explicitly
+      config.headers["Content-Type"] = "application/x-www-form-urlencoded";
     }
   }
   return config;
-}, (error) => {
-  return Promise.reject(error);
 });

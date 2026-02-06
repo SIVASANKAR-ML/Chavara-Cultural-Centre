@@ -324,13 +324,15 @@ export async function logout() {
 }
 
 export async function verify_and_log_entry(
-  bookingId: string
+  qrString: string
 ): Promise<VerificationResponse> {
+  // We explicitly create the form data here to ensure no mismatch
+  const params = new URLSearchParams();
+  params.append("qr_string", qrString); 
+
   const response = await axiosClient.post<FrappeResponse<VerificationResponse>>(
     "/method/chavara_booking.api.ticket_verification.verify_and_log_entry",
-    {
-      booking_id: bookingId,
-    }
+    params
   );
 
   return response.data.message;
