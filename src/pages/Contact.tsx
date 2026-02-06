@@ -47,7 +47,7 @@ const Contact = () => {
                 Get in Touch
               </h2>
               <p className="font-body text-muted-foreground">
-                We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+                
               </p>
             </div>
 
@@ -61,8 +61,8 @@ const Contact = () => {
                     <h3 className="font-heading font-semibold text-foreground mb-1">Address</h3>
                     <p className="font-body text-muted-foreground">
                       Chavara Cultural Center<br />
-                      Chavara, Kollam District<br />
-                      Kerala, India - 691583
+                      Karikkamuri Rd, Ernakulam South, <br />
+                      Kochi, Ernakulam, Kerala 682011
                     </p>
                   </div>
                 </div>
@@ -185,7 +185,7 @@ const Contact = () => {
                   <Textarea
                     id="message"
                     placeholder="Tell us more about your inquiry..."
-                    rows={6}
+                    rows={5}
                     required
                     className="w-full resize-none font-body"
                   />
@@ -201,7 +201,23 @@ const Contact = () => {
             </Card>
           </motion.div>
         </div>
+        
+    
       </section>
+
+      <div style={{ width: "100%", height: "450px" }}>
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3929.54378195433!2d76.28558967479323!3d9.971862490132114!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b08731a5a06f5cb%3A0xa5fc37f38ef4fe62!2sChavara%20Cultural%20Centre!5e0!3m2!1sen!2sin!4v1770373370364!5m2!1sen!2sin"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Chavara Cultural Centre Map"
+            />
+          </div>
+          
     </div>
   );
 };
