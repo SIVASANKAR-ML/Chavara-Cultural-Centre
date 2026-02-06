@@ -33,6 +33,9 @@ export interface ChavaraEvent {
   description: string;
   price: number;
   schedules?: EventSchedule[];
+  host_name?: string;
+  host_img?: string;
+  host_description?: string;
 }
 
 interface FrappeResponse<T> {
@@ -80,6 +83,9 @@ const mapEvent = (ev: any): ChavaraEvent => {
     description: ev.description || "",
     price: ev.price || 0,
     image: ev.event_image || "/placeholder-event.jpg",
+    host_name: ev.host_name,
+    host_img: ev.host_img,
+    host_description: ev.host_description,
     schedules: ev.schedules?.map((schedule: any) => {
       // IMPORTANT: Access row_wise_pricing safely and preserve it
       const pricing = schedule.row_wise_pricing;
