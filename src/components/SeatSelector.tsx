@@ -194,9 +194,9 @@ const SeatSelector = ({
                   ROW_COLORS[group].available.includes("green") && "border-green-500",
                   ROW_COLORS[group].available.includes("blue") && "border-blue-500"
                 )} />
-                <div className="text-[10px] sm:text-xs">
-                  <div className="font-semibold text-gray-700">{group}</div>
-                  <div className="text-gray-500 text-[9px] sm:text-[10px]">₹{price}</div>
+                <div className="text-[10px] sm:text-sm">
+                  <div className="font-semibold text-gray-700">₹{price}</div>
+                  <div className="text-gray-500 text-[9px] sm:text-[10px]">{group}</div>
                 </div>
               </div>
             ))}

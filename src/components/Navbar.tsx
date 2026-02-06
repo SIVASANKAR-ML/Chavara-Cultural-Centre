@@ -78,7 +78,7 @@ const Navbar = () => {
                 isScrolled ? "text-foreground" : "text-primary-foreground"
               }`}
             >
-              Chavara
+              Chavara Shows
             </motion.div>
           </Link>
 

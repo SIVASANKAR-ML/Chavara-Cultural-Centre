@@ -33,6 +33,20 @@ const EventDetails = () => {
     loadEventData();
   }, [eventId]);
 
+  const lowestSeatPrice = useMemo(() => {
+    if (!event?.schedules?.length) return null;
+  
+    // pick the schedule you care about
+    const schedule = event.schedules[0];
+  
+    if (!schedule.row_wise_pricing?.length) return null;
+  
+    return Math.min(
+      ...schedule.row_wise_pricing.map(p => p.price)
+    );
+  }, [event]);
+  
+
   const transformedShowTimes = useMemo(() => {
     if (!event?.schedules) return [];
     const groups: { [key: string]: string[] } = {};
@@ -153,7 +167,7 @@ const EventDetails = () => {
                 <div className="mt-8 pt-6 border-t flex items-center justify-between">
                   <div>
                     <p className="text-xs text-muted-foreground font-semibold uppercase">Price Start From</p>
-                    <p className="text-2xl font-bold text-foreground">₹{event.price}</p>
+                    <p className="text-2xl font-bold text-foreground">₹{lowestSeatPrice}</p>
                   </div>
                   <div className="p-2 bg-primary/10 rounded-lg text-primary">
                     <MapPin size={20} />

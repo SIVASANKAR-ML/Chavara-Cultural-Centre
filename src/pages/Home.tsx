@@ -10,6 +10,8 @@ import { pastEvents, reviews, venue } from "@/data/events";
 // Added API imports
 import { fetchEvents, ChavaraEvent } from "@/services/api";
 
+
+
 const heroImages = [
   "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1920&h=1080&fit=crop",
   "https://img.freepik.com/premium-photo/party-event-decoration-asia-beautiful-decorations-cultural-program-wedding-decorations_343960-18475.jpg",
@@ -195,7 +197,6 @@ const Home = () => {
             </div>
           )}
         </div>
-
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}

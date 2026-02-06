@@ -377,7 +377,7 @@ const SeatBooking = () => {
                 
                 <div>
                   <p className="text-sm text-muted-foreground">Venue</p>
-                  <p className="font-medium">{event.venue || "Main Hall"}</p>
+                  <p className="font-medium">Chavara Cultural Centre</p>
                 </div>
                 
                 {selectedSeats.length > 0 && (
@@ -390,20 +390,36 @@ const SeatBooking = () => {
 
               {/* NEW: Updated Pricing Display */}
               <div className="border-t pt-4 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Tickets ({selectedSeats.length})</span>
-                  <span className="font-medium">₹{totalPrice.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Convenience Fee</span>
-                  <span className="font-medium">₹{convenienceFee.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between font-bold text-lg border-t pt-2 mt-2">
-                  <span>Total</span>
-                  <span className="text-green-600">₹{finalAmount.toLocaleString()}</span>
-                </div>
-              </div>
+  {/* Tickets Row */}
+  <div className="flex justify-between text-sm">
+    <span className="text-gray-600">Tickets ({selectedSeats.length})</span>
+    <span className="font-medium">₹{totalPrice.toLocaleString()}</span>
+  </div>
 
+  {/* Convenience Fee Total Row */}
+  <div className="flex justify-between text-sm">
+    <span className="text-gray-600">Convenience Fee</span>
+    <span className="font-medium">₹{convenienceFee.toLocaleString()}</span>
+  </div>
+
+  {/* GST Breakdown (Tax lines are usually smaller/grayer) */}
+  <div className="pl-4 space-y-1">
+    <div className="flex justify-between text-xs text-gray-500">
+      <span>Base Amount</span>
+      <span>₹{(convenienceFee /1.18).toLocaleString()}</span>
+    </div>
+    <div className="flex justify-between text-xs text-gray-500">
+      <span>Integrated GST (IGST) @ 18% </span>
+      <span>₹{(convenienceFee*(18/100)).toLocaleString()}</span>
+    </div>
+  </div>
+
+  {/* Total Row */}
+  <div className="flex justify-between font-bold text-lg border-t pt-2 mt-2">
+    <span>Total</span>
+    <span className="text-green-600">₹{finalAmount.toLocaleString()}</span>
+  </div>
+</div>
               <Button
                 className="w-full mt-6"
                 size="lg"

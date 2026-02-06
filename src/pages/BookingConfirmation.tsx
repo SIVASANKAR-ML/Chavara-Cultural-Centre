@@ -193,6 +193,7 @@ const BookingConfirmation = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Total Amount Paid</span>
                     <span className="font-bold text-2xl text-primary">₹{booking.total_amount}</span>
+                    
                   </div>
                 </div>
               </div>
