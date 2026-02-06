@@ -1,5 +1,14 @@
 import { axiosClient } from "@/lib/axios";
 import axios from "axios";
+import { toast } from "sonner";
+
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
+declare var Razorpay: any;
 
 /* =========================
    Types & Interfaces
@@ -336,4 +345,80 @@ export async function verify_and_log_entry(
   );
 
   return response.data.message;
+}
+
+declare var Razorpay: any;
+
+
+// Helper to load external scripts in React
+const loadRazorpayScript = (src: string) => {
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = src;
+    script.onload = () => {
+      resolve(true);
+    };
+    script.onerror = () => {
+      resolve(false);
+    };
+    document.body.appendChild(script);
+  });
+};
+
+
+declare var Razorpay: any;
+
+export async function initiateRazorpayPayment(bookingId: string, customerData: any, navigate: any) {
+  // --- NEW: Load the script dynamically ---
+  const isScriptLoaded = await loadRazorpayScript("https://checkout.razorpay.com/v1/checkout.js");
+
+  if (!isScriptLoaded) {
+    toast.error("Razorpay SDK failed to load. Are you online?");
+    return;
+  }
+  // ----------------------------------------
+
+  try {
+    const params = new URLSearchParams();
+    params.append("booking_id", bookingId);
+
+    const orderRes = await axiosClient.post("/method/chavara_booking.api.payment.create_rzp_order", params);
+    const order = orderRes.data.message;
+
+    const options = {
+      key: "rzp_test_SCRYskZANza2uw", 
+      amount: order.amount,
+      currency: "INR",
+      name: "Chavara Cultural Centre",
+      description: `Booking #${bookingId}`,
+      order_id: order.id,
+      handler: async function (response: any) {
+        const verifyParams = new URLSearchParams();
+        verifyParams.append("rzp_response", JSON.stringify(response));
+        verifyParams.append("booking_id", bookingId);
+
+        const verifyRes = await axiosClient.post("/method/chavara_booking.api.payment.verify_payment", verifyParams);
+
+        if (verifyRes.data.message.success) {
+          toast.success("Payment Successful!");
+          navigate(`/booking-confirmation/${bookingId}`);
+        } else {
+          toast.error("Security check failed");
+        }
+      },
+      prefill: {
+        name: customerData.name,
+        email: customerData.email,
+        contact: customerData.phone
+      },
+      theme: { color: "#F97316" }
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+
+  } catch (error: any) {
+    console.error("Razorpay Error:", error.response?.data || error.message);
+    toast.error("Could not start payment.");
+  }
 }
