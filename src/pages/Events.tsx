@@ -94,7 +94,7 @@ const Events = () => {
 
   return (
     <div className="min-h-screen">
-      <section className="container mx-auto px-4 py-12">
+      <section className="container mx-auto px-4 py-12 pt-20 md:pt-24 lg:pt-28">
         {/* PAGE HEADER */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -103,7 +103,7 @@ const Events = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-8"
         >
-          <h1 className="font-serif font-bold text-3xl md:text-4xl text-foreground">Events</h1>
+          <h1 className="font-serif font-bold text-3xl md:text-4xl lg:text-5xl text-foreground">Events</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Browse upcoming events, see what is live now, and watch highlights from past performances.
           </p>

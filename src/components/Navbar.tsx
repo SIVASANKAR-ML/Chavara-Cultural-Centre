@@ -54,128 +54,133 @@ const Navbar = () => {
 
   return (
     <nav
-  className={`fixed top-0 left-0 right-0 w-full z-50 border-b transition-all duration-300 ${
-    isScrolled
-      ? "border-border bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60"
-      : "border-primary-foreground/20 bg-gradient-hero"
-  } ${showScrollIcon ? "pb-4 md:pb-0" : ""}`}
->
-      <div className="w-full">
-        <div className="container mx-auto px-4">
+      className={`fixed top-0 left-0 right-0 w-full z-50 border-b transition-all duration-300 ${
+        isScrolled
+          ? "border-border bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60"
+          : "border-primary-foreground/20 bg-gradient-hero"
+      }`}
+    >
+      {/* DESKTOP & MOBILE HEADER */}
+      <div className="w-full px-4 md:px-0">
+        <div className="container mx-auto">
           <div className="flex h-16 items-center justify-between">
+            {/* LOGO */}
+            <Link to="/" className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+              <motion.img
+                src={logo}
+                alt="Chavara Cultural Center Logo"
+                className="h-10 w-10 md:h-12 md:w-12"
+                whileHover={{ scale: 1.05 }}
+              />
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className={`font-roboto font-medium whitespace-nowrap text-sm md:text-lg lg:text-2xl ${
+                  isScrolled ? "text-foreground" : "text-primary-foreground"
+                }`}
+              >
+                Chavara Shows
+              </motion.div>
+            </Link>
 
-          {/* LOGO */}
-          <Link to="/" className="flex items-center gap-3">
-            <motion.img
-              src={logo}
-              alt="Chavara Cultural Center Logo"
-              className="h-10 w-10 md:h-12 md:w-12"
-              whileHover={{ scale: 1.05 }}
-            />
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className={`text-xl font-roboto font-medium md:text-2xl ${
-                isScrolled ? "text-foreground" : "text-primary-foreground"
-              }`}
+            {/* DESKTOP NAV */}
+            <div className="hidden md:flex items-center gap-1 lg:gap-6">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`relative px-3 lg:px-0 font-medium text-sm lg:text-base transition-colors ${
+                    isScrolled
+                      ? `hover:text-primary ${
+                          isActive(item.path)
+                            ? "text-primary font-semibold"
+                            : "text-muted-foreground"
+                        }`
+                      : `hover:text-white ${
+                          isActive(item.path)
+                            ? "text-white font-semibold"
+                            : "text-primary-foreground"
+                        }`
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              ))}
+
+              {/* SCAN ICON (VISIBLE ONLY FOR STAFF) */}
+              {isStaff && (
+                <Link
+                  to="/verify"
+                  className={`ml-2 lg:ml-4 px-3 py-2 rounded-full transition-colors flex items-center gap-2 whitespace-nowrap text-sm ${
+                    isScrolled ? "hover:bg-orange-100" : "hover:bg-white/10"
+                  }`}
+                  title="Staff Scanner"
+                >
+                  <Scan
+                    className={`h-5 w-5 lg:h-6 lg:w-6 flex-shrink-0 ${
+                      isScrolled ? "text-orange-600" : "text-white"
+                    }`}
+                  />
+                  <span className={`text-xs lg:text-sm font-bold uppercase ${isScrolled ? 'text-orange-600' : 'text-white'}`}>
+                    Scanner
+                  </span>
+                </Link>
+              )}
+
+              {/* LOGIN / LOGOUT */}
+              {isLoggedIn ? (
+                <button
+                  onClick={handleLogout}
+                  className={`ml-2 lg:ml-4 p-2 rounded-full transition-colors flex-shrink-0 ${
+                    isScrolled ? "hover:bg-red-50 text-red-500" : "hover:bg-white/10 text-white"
+                  }`}
+                  title="Logout"
+                >
+                  <LogOut className="h-5 w-5 lg:h-6 lg:w-6" />
+                </button>
+              ) : (
+                <Link
+                  to="/login"
+                  className={`ml-2 lg:ml-4 p-2 rounded-full transition-colors flex-shrink-0 ${
+                    isScrolled ? "hover:bg-gray-100" : "hover:bg-white/10"
+                  }`}
+                  title="Login"
+                >
+                  <User
+                    className={`h-5 w-5 lg:h-6 lg:w-6 ${
+                      isScrolled ? "text-muted-foreground" : "text-primary-foreground"
+                    }`}
+                  />
+                </Link>
+              )}
+            </div>
+
+            {/* MOBILE MENU BUTTON */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden flex-shrink-0"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              Chavara Shows
-            </motion.div>
-          </Link>
-
-          {/* DESKTOP NAV */}
-          <div className="hidden md:flex items-center gap-6">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`relative font-medium transition-colors ${
-                  isScrolled
-                    ? `hover:text-primary ${
-                        isActive(item.path)
-                          ? "text-primary font-semibold"
-                          : "text-muted-foreground"
-                      }`
-                    : `hover:text-white ${
-                        isActive(item.path)
-                          ? "text-white font-semibold"
-                          : "text-primary-foreground"
-                      }`
-                }`}
-              >
-                {item.name}
-              </Link>
-            ))}
-
-            {/* SCAN ICON (VISIBLE ONLY FOR STAFF) */}
-            {isStaff && (
-              <Link
-                to="/verify"
-                className={`p-2 rounded-full transition-colors flex items-center gap-2 ${
-                  isScrolled ? "hover:bg-orange-100" : "hover:bg-white/10"
-                }`}
-                title="Staff Scanner"
-              >
-                <Scan
-                  className={`h-6 w-6 ${
-                    isScrolled ? "text-orange-600" : "text-white"
-                  }`}
-                />
-                <span className={`text-xs font-bold uppercase ${isScrolled ? 'text-orange-600' : 'text-white'}`}>Scanner</span>
-              </Link>
-            )}
-
-            {/* LOGIN / LOGOUT */}
-            {isLoggedIn ? (
-              <button
-                onClick={handleLogout}
-                className={`p-2 rounded-full transition-colors ${
-                  isScrolled ? "hover:bg-red-50 text-red-500" : "hover:bg-white/10 text-white"
-                }`}
-                title="Logout"
-              >
-                <LogOut className="h-6 w-6" />
-              </button>
-            ) : (
-              <Link
-                to="/login"
-                className={`p-2 rounded-full transition-colors ${
-                  isScrolled ? "hover:bg-gray-100" : "hover:bg-white/10"
-                }`}
-                title="Login"
-              >
-                <User
-                  className={`h-6 w-6 ${
-                    isScrolled ? "text-muted-foreground" : "text-primary-foreground"
-                  }`}
-                />
-              </Link>
-            )}
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
           </div>
-
-          {/* MOBILE MENU BUTTON */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </Button>
         </div>
+      </div>
 
-        {/* MOBILE MENU */}
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="md:hidden border-t bg-slate-900 py-4 w-screen -ml-4"
-          >
+      {/* MOBILE MENU */}
+      {mobileMenuOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="md:hidden border-t bg-slate-900 w-full overflow-hidden"
+        >
+          <div className="px-4 py-2 space-y-1">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-3 text-slate-100 border-b border-slate-800"
+                className="block px-3 py-3 text-sm text-slate-100 rounded hover:bg-slate-800 transition-colors truncate"
               >
                 {item.name}
               </Link>
@@ -186,10 +191,10 @@ const Navbar = () => {
               <Link
                 to="/verify"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-2 px-4 py-3 font-medium text-orange-400 bg-orange-500/10"
+                className="flex items-center gap-2 px-3 py-3 text-sm font-medium text-orange-400 bg-orange-500/10 rounded hover:bg-orange-500/20 transition-colors"
               >
-                <Scan className="h-5 w-5" />
-                Staff Gate Scanner
+                <Scan className="h-5 w-5 flex-shrink-0" />
+                <span className="truncate">Staff Gate Scanner</span>
               </Link>
             )}
 
@@ -197,25 +202,24 @@ const Navbar = () => {
             {isLoggedIn ? (
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-2 px-4 py-3 font-medium text-red-400"
+                className="w-full flex items-center gap-2 px-3 py-3 text-sm font-medium text-red-400 rounded hover:bg-red-500/10 transition-colors text-left"
               >
-                <LogOut className="h-5 w-5" />
-                Logout
+                <LogOut className="h-5 w-5 flex-shrink-0" />
+                <span>Logout</span>
               </button>
             ) : (
               <Link
                 to="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-2 px-4 py-3 font-medium text-slate-100"
+                className="flex items-center gap-2 px-3 py-3 text-sm font-medium text-slate-100 rounded hover:bg-slate-800 transition-colors"
               >
-                <User className="h-5 w-5" />
-                Staff Login
+                <User className="h-5 w-5 flex-shrink-0" />
+                <span>Staff Login</span>
               </Link>
             )}
-          </motion.div>
-        )}
-        </div>
-      </div>
+          </div>
+        </motion.div>
+      )}
     </nav>
   );
 };
