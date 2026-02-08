@@ -121,7 +121,7 @@ const BookingConfirmation = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 py-8 md:py-12">
+    <div className="min-h-screen bg-slate-100 pt-24 pb-8 md:pt-28 md:pb-12">
       <div className="container mx-auto px-4 max-w-2xl">
         
         {/* PAGE HEADER */}
