@@ -4,10 +4,10 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
-  // 1. BASE: Points to the folder where Frappe serves assets for your app
-  base: mode === "production" ? "/assets/chavara_booking/js/" : "/",
+  base: mode === "production" ? "/assets/chavara_booking/" : "/",
+
   plugins: [
-    react(), 
+    react(),
     mode === "development" && componentTagger()
   ].filter(Boolean),
 
@@ -17,11 +17,9 @@ export default defineConfig(({ mode }) => ({
     },
   },
 
-  // 2. BUILD: Automates moving files to your Frappe public folder
   build: {
-    // Build directly into the public/js folder for clarity
-    outDir: "../chavara_booking/public/js",
+    outDir: "dist",        // ✅ ALWAYS build to dist
+    assetsDir: ".",        // 🔥 NO nested /assets/
     emptyOutDir: true,
   },
-
 }));

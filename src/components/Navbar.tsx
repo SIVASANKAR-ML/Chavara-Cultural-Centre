@@ -26,14 +26,32 @@ const Navbar = () => {
     // NEW: Check if user is staff on mount and when location changes
     const verifyUser = async () => {
       const staffStatus = await checkScannerAccess();
-      setIsStaff(staffStatus);
-      setIsLoggedIn(!!localStorage.getItem("user_id"));
+      const loggedIn = !!localStorage.getItem("user_id");
+      setIsStaff(loggedIn && staffStatus);
+      setIsLoggedIn(loggedIn);
     };
 
     verifyUser();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [location]); // Re-verify whenever the page changes
+
+  // Additional check whenever localStorage changes (for login/logout)
+  useEffect(() => {
+    const verifyUserStatus = async () => {
+      const loggedIn = !!localStorage.getItem("user_id");
+      if (loggedIn) {
+        const staffStatus = await checkScannerAccess();
+        setIsStaff(staffStatus);
+      }
+      setIsLoggedIn(loggedIn);
+    };
+
+    const interval = setInterval(verifyUserStatus, 1000); // Check every second
+    verifyUserStatus(); // Immediate check
+    
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLogout = async () => {
     await logout();

@@ -422,3 +422,24 @@ export async function initiateRazorpayPayment(bookingId: string, customerData: a
     toast.error("Could not start payment.");
   }
 }
+
+export async function createAdminBooking(bookingData: {
+  eventId: string;
+  scheduleId: string;
+  customerName: string;
+  phone: string;
+  email: string;
+  selectedSeats: string[];
+  totalAmount?: number;
+}) {
+  const response = await axiosClient.post("/method/chavara_booking.api.booking.create_admin_booking", {
+    event_id: bookingData.eventId,
+    schedule_id: bookingData.scheduleId,
+    customer_name: bookingData.customerName,
+    phone: bookingData.phone,
+    email: bookingData.email,
+    selected_seats: bookingData.selectedSeats.join(","),
+  });
+
+  return response.data.message;
+}

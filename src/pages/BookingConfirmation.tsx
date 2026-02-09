@@ -33,7 +33,7 @@ interface Booking {
   total_amount: number;
   booking_date: string;
   status: string;
-  event_image?: string; // Real image from Frappe
+  event_image?: string; 
   venue?: string;
 }
 
@@ -41,6 +41,8 @@ const BookingConfirmation = () => {
   const { bookingId } = useParams();
   const navigate = useNavigate();
   const ticketRef = useRef<HTMLDivElement>(null); 
+  const autoDownloadTriggered = useRef(false); // Ref to prevent double execution in strict mode
+  
   const [booking, setBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
   const [secureQrData, setSecureQrData] = useState<string>(""); 
@@ -52,12 +54,9 @@ const BookingConfirmation = () => {
         const bookingData = await getBookingDetails(bookingId);
         if (bookingData) {
           setBooking(bookingData);
-          
-          // Fetch the secure QR string
           const qrRes = await axiosClient.get("/method/chavara_booking.api.booking.get_secure_qr_code", {
             params: { booking_id: bookingId }
           });
-          
           if (typeof qrRes.data.message === 'string') {
             setSecureQrData(qrRes.data.message);
           }
@@ -73,16 +72,20 @@ const BookingConfirmation = () => {
   }, [bookingId]);
 
   // High-quality PNG Download logic
-  const handleDownloadPNG = async () => {
+  const handleDownloadPNG = async (isAuto = false) => {
     if (!ticketRef.current) return;
     
-    const toastId = toast.loading("Generating high-quality ticket...");
+    // Only show "generating" toast if the user clicked manually
+    let toastId;
+    if (!isAuto) {
+      toastId = toast.loading("Generating high-quality ticket...");
+    }
     
     try {
       const canvas = await html2canvas(ticketRef.current, {
-        scale: 3, // Sharp resolution for scanning
-        useCORS: true, // Crucial: Allows capturing images from your Frappe server
-        backgroundColor: "#f1f5f9", // bg-slate-100 fallback
+        scale: 3, 
+        useCORS: true, 
+        backgroundColor: "#f1f5f9",
         logging: false,
       });
       
@@ -92,12 +95,39 @@ const BookingConfirmation = () => {
       link.href = image;
       link.click();
       
-      toast.success("Ticket saved to gallery!", { id: toastId });
+      if (!isAuto) {
+        toast.success("Ticket saved to gallery!", { id: toastId });
+      } else {
+        toast.success("Ticket downloaded automatically");
+      }
     } catch (err) {
       console.error("Download Error:", err);
-      toast.error("Generation failed. Please try a screenshot.", { id: toastId });
+      if (!isAuto) {
+        toast.error("Generation failed. Please try a screenshot.", { id: toastId });
+      }
     }
   };
+
+  // --- AUTO DOWNLOAD LOGIC ---
+  useEffect(() => {
+    // We only trigger if data is loaded, and we haven't triggered in this component lifecycle
+    if (booking && secureQrData && !autoDownloadTriggered.current) {
+      const storageKey = `downloaded_${bookingId}`;
+      
+      // Check if this specific ticket was already downloaded in this session (e.g., after a refresh)
+      if (!sessionStorage.getItem(storageKey)) {
+        autoDownloadTriggered.current = true;
+        
+        // Timeout ensures the QR code and images are actually painted on the screen before capturing
+        const timer = setTimeout(() => {
+          handleDownloadPNG(true);
+          sessionStorage.setItem(storageKey, "true");
+        }, 1500); 
+
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [booking, secureQrData, bookingId]);
 
   if (loading) return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 gap-4">
@@ -144,7 +174,6 @@ const BookingConfirmation = () => {
             <Card className="rounded-t-[32px] rounded-b-none border-none shadow-xl overflow-hidden bg-white">
               <div className="relative h-52 w-full bg-slate-200">
                 <img 
-                  // DYNAMIC IMAGE FROM BACKEND
                   src={booking.event_image || 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800'} 
                   crossOrigin="anonymous" 
                   className="w-full h-full object-cover" 
@@ -250,7 +279,7 @@ const BookingConfirmation = () => {
             <Button 
               variant="outline" 
               className="flex-1 h-14 rounded-2xl border-2 border-primary text-primary font-black active:scale-95 transition-transform"
-              onClick={handleDownloadPNG}
+              onClick={() => handleDownloadPNG(false)}
             >
                 <Download className="mr-2 h-5 w-5" /> DOWNLOAD PNG
             </Button>

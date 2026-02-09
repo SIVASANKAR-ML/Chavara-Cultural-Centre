@@ -27,6 +27,15 @@ const ShowTimeSelector = ({
     });
   };
 
+  const formatTime = (timeStr: string) => {
+    // Handle time format like "21:59:48.104132" -> "21:59"
+    if (!timeStr) return timeStr;
+    const timeParts = timeStr.split(".");
+    const mainTime = timeParts[0]; // Get "21:59:48"
+    const timeComponents = mainTime.split(":");
+    return `${timeComponents[0]}:${timeComponents[1]}`; // Return "21:59"
+  };
+
   return (
     <div className="space-y-6">
       {/* Date Selection */}
@@ -82,7 +91,7 @@ const ShowTimeSelector = ({
                       : "bg-card border border-border hover:border-accent hover:bg-accent/5"
                   )}
                 >
-                  {time}
+                  {formatTime(time)}
                 </motion.button>
               ))}
           </div>
