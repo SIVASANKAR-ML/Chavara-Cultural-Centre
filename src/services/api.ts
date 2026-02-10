@@ -369,24 +369,25 @@ const loadRazorpayScript = (src: string) => {
 declare var Razorpay: any;
 
 export async function initiateRazorpayPayment(bookingId: string, customerData: any, navigate: any) {
-  // --- NEW: Load the script dynamically ---
   const isScriptLoaded = await loadRazorpayScript("https://checkout.razorpay.com/v1/checkout.js");
 
   if (!isScriptLoaded) {
-    toast.error("Razorpay SDK failed to load. Are you online?");
+    toast.error("Razorpay SDK failed to load.");
     return;
   }
-  // ----------------------------------------
 
   try {
     const params = new URLSearchParams();
     params.append("booking_id", bookingId);
 
     const orderRes = await axiosClient.post("/method/chavara_booking.api.payment.create_rzp_order", params);
-    const order = orderRes.data.message;
+    
+    // 1. DESTUCTURE THE RESPONSE
+    const { order, gateway_key } = orderRes.data.message;
 
     const options = {
-      key: "rzp_test_SCRYskZANza2uw", 
+      // 2. USE THE DYNAMIC KEY
+      key: gateway_key, 
       amount: order.amount,
       currency: "INR",
       name: "Chavara Cultural Centre",
@@ -418,7 +419,7 @@ export async function initiateRazorpayPayment(bookingId: string, customerData: a
     rzp.open();
 
   } catch (error: any) {
-    console.error("Razorpay Error:", error.response?.data || error.message);
+    console.error("Razorpay Error:", error);
     toast.error("Could not start payment.");
   }
 }
