@@ -21,6 +21,7 @@ import Login from "./pages/Login";      // ✅ Added login page
 import Signup from "./pages/Signup";    // ✅ Added signup page
 import TicketVerification from "./pages/TicketVerification";
 import SeatBooking from "./pages/SeatBooking";
+import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
         <div className="flex flex-col min-h-screen">
           {/* Navbar stays on all pages */}
           <Navbar />
