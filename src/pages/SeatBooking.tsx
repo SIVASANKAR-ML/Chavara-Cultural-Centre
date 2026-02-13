@@ -564,16 +564,16 @@ const SeatBooking = () => {
       {/* Header */}
       <div className="bg-white border-b sticky top-0 z-10 shadow-sm">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
             <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div className="flex-1">
               <h1 className="font-bold text-lg text-slate-900">{event?.title}</h1>
-              <div className="flex items-center gap-4 text-sm text-muted-foreground font-medium">
+              <div className="flex items-center gap-2 sm:gap-4 text-sm text-muted-foreground font-medium">
                 <div className="flex items-center gap-1"><Calendar className="h-4 w-4" />{selectedSchedule?.show_date}</div>
                 <div className="flex items-center gap-1"><Clock className="h-4 w-4" />{selectedSchedule?.show_time}</div>
-                <div className="flex items-center gap-1"><MapPin className="h-4 w-4" />{event?.venue || "Main Hall"}</div>
+                <div className="hidden sm:flex items-center gap-1"><MapPin className="h-4 w-4" />{event?.venue || "Main Hall"}</div>
               </div>
             </div>
           </div>
@@ -581,9 +581,9 @@ const SeatBooking = () => {
       </div>
 
       {/* Progress Bar */}
-      <div className="bg-white border-b overflow-x-auto no-scrollbar">
+      <div className="bg-white border-b overflow-x-auto sm:overflow-visible sm:no-scrollbar">
         <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center gap-8 min-w-max">
+          <div className="flex items-center gap-3 sm:gap-8 min-w-max">
             {[
               { step: 1, title: "Select Seats" },
               { step: 2, title: "Review & Pay" },
@@ -597,7 +597,7 @@ const SeatBooking = () => {
                 }`}>
                   {item.step}
                 </div>
-                <span className={`text-sm font-bold ${
+                <span className={`text-xs sm:text-sm font-bold ${
                   currentStep.step >= item.step ? "text-green-600" : "text-gray-400"
                 }`}>
                   {item.title}
@@ -610,11 +610,11 @@ const SeatBooking = () => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-6 flex-1">
-        <div className="grid lg:grid-cols-4 gap-6">
+      <div className="container mx-auto px-4 py-6 flex-1 pb-32 lg:pb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           
           <div className="lg:col-span-3">
-            <Card className="p-6 md:p-10 rounded-[24px] border-none shadow-sm bg-white">
+            <Card className="p-4 sm:p-6 md:p-10 rounded-[24px] border-none shadow-sm bg-white">
               {currentStep.step === 1 ? (
                 <div className="space-y-8">
                   <div>
@@ -663,7 +663,7 @@ const SeatBooking = () => {
 
           {/* Sidebar Summary */}
           <div className="lg:col-span-1">
-            <Card className="p-8 sticky top-24 rounded-[32px] border-none shadow-xl bg-white">
+            <Card className="p-4 sm:p-6 lg:p-8 lg:sticky lg:top-24 fixed bottom-0 left-0 right-0 lg:rounded-[32px] rounded-t-[24px] z-20 lg:z-0 border-none shadow-xl bg-white">
               <h3 className="font-black text-xl mb-6 text-slate-900">Summary</h3>
               
               <div className="space-y-4 mb-8 text-sm">
@@ -683,7 +683,7 @@ const SeatBooking = () => {
               </div>
 
               {/* Pricing Breakdown */}
-              <div className="border-t border-slate-100 pt-6 space-y-4">
+              <div className="border-t border-slate-100 pt-6 space-y-4 hidden lg:block">
                 <div className="flex justify-between text-sm font-medium">
                   <span className="text-slate-500">Tickets ({selectedSeats.length})</span>
                   <span className="text-slate-900">₹{totalPrice.toLocaleString()}</span>
@@ -711,8 +711,14 @@ const SeatBooking = () => {
                 </div>
               </div>
 
+              {/* Mobile: show only total (summary) above button */}
+              <div className="lg:hidden flex justify-between items-center w-full mb-4 px-3">
+                <span className="font-bold text-slate-400 uppercase text-xs">Total</span>
+                <span className="text-2xl font-black text-green-600">₹{finalAmount.toLocaleString()}</span>
+              </div>
+
               <Button
-                className="w-full mt-8 h-16 rounded-2xl text-lg font-black shadow-lg active:scale-95 transition-all"
+                className="w-full mt-8 h-16 rounded-2xl text-base sm:text-lg font-black shadow-lg active:scale-95 transition-all"
                 disabled={selectedSeats.length === 0 || isBooking}
                 onClick={handleProceedToPayment}
               >
@@ -724,7 +730,11 @@ const SeatBooking = () => {
                 ) : currentStep.step === 1 ? (
                   "Continue to Details"
                 ) : (
-                  isAdmin ? `Confirm Booking (Admin)` : `Pay ₹${finalAmount.toLocaleString()}`
+                  isAdmin ? (
+                    <span className="truncate block">Confirm Booking (Admin)</span>
+                  ) : (
+                    <span className="truncate block">Pay ₹{finalAmount.toLocaleString()}</span>
+                  )
                 )}
               </Button>
               
