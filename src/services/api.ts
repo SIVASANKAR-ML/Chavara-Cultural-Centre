@@ -26,7 +26,7 @@ export interface EventSchedule {
   show_time: string;
   slot_capacity: number;
   status: string;
-  row_wise_pricing: RowPricing[]; // NEW: Added row pricing
+  row_wise_pricing: RowPricing[];
 }
 
 export interface ChavaraEvent {
@@ -78,7 +78,7 @@ const mapEvent = (ev: any): ChavaraEvent => {
         keys: Object.keys(sched)
       });
     });
-  }
+    }
   
   const mapped = {
     id: ev.name,
@@ -252,31 +252,69 @@ export async function getBookedSeats(
 export async function lockSeats(
   eventId: string,
   scheduleId: string,
-  seats: string[]
-) {
-  const response = await axiosClient.post<
-    FrappeResponse<any>
-  >("/method/chavara_booking.api.seat_lock.lock_seats", {
-    event_id: eventId,
-    schedule_id: scheduleId,
-    seats: seats.join(","),
-  });
+  seats: string[],
+  recaptchaToken?: string
+){
+  try {
+    const response = await axiosClient.post<
+      FrappeResponse<any>
+    >("/method/chavara_booking.api.seat_lock.lock_seats", {
+      event_id: eventId,
+      schedule_id: scheduleId,
+      seats: seats.join(","),
+      recaptcha_token: recaptchaToken
+    });
 
-  return response.data.message;
+    const result = response.data.message;
+    
+    // Handle failed seats
+    if (result.failed_seats && result.failed_seats.length > 0) {
+      console.warn("Some seats failed to lock:", result.failed_seats);
+      toast.warning(`Some seats unavailable: ${result.failed_seats.join(", ")}`);
+    }
+    
+    return result;
+  } catch (error: any) {
+    console.error("lockSeats error:", error);
+    throw error;
+  }
 }
 
 /** Get locked seats */
 export async function getLockedSeats(scheduleId: string) {
-  const response = await axiosClient.get<
-    FrappeResponse<string[]>
-  >("/method/chavara_booking.api.seat_lock.get_locked_seats", {
-    params: { schedule_id: scheduleId },
-  });
+  try {
+    const response = await axiosClient.get<
+      FrappeResponse<string[]>
+    >("/method/chavara_booking.api.seat_lock.get_locked_seats", {
+      params: { schedule_id: scheduleId },
+    });
 
-  return response.data.message || [];
+    return response.data.message || [];
+  } catch (error) {
+    console.error("getLockedSeats error:", error);
+    return [];
+  }
 }
 
 
+/** NEW: Release seat locks when user deselects them */
+export async function releaseMyLocks(scheduleId: string, seats: string[]) {
+  try {
+    if (seats.length === 0) return { success: true };
+    
+    const response = await axiosClient.post<
+      FrappeResponse<any>
+    >("/method/chavara_booking.api.seat_lock.release_my_locks", {
+      schedule_id: scheduleId,
+      seats: seats.join(",")
+    });
+
+    return response.data.message;
+  } catch (error) {
+    console.error("releaseMyLocks error:", error);
+    return { success: false };
+  }
+}
 
 /**
  * Fetches a CSRF token from the server.
@@ -284,8 +322,7 @@ export async function getLockedSeats(scheduleId: string) {
  */
 export async function ensureCSRFToken() {
   try {
-    // Calling the guest-allowed method we created in the Python seat_lock.py
-    const response = await axios.get('/api/method/chavara_booking.api.seat_lock.get_guest_csrf_token', { withCredentials: true });
+    const response = await axios.get('/api/method/chavara_booking.api.seat_lock.get_csrf_token', { withCredentials: true });
     const token = response.data.message;
     if (token) {
       axiosClient.defaults.headers.common['X-Frappe-CSRF-Token'] = token;
@@ -401,6 +438,13 @@ export async function initiateRazorpayPayment(bookingId: string, customerData: a
         const verifyRes = await axiosClient.post("/method/chavara_booking.api.payment.verify_payment", verifyParams);
 
         if (verifyRes.data.message.success) {
+          // Confirm seat locks with payment_id
+          await axiosClient.post("/method/chavara_booking.api.seat_lock.confirm_seat_lock_after_booking", {
+            schedule_id: order.receipt,
+            seats: customerData.seats,
+            payment_id: response.razorpay_payment_id
+          });
+          
           toast.success("Payment Successful!");
           navigate(`/booking-confirmation/${bookingId}`);
         } else {
