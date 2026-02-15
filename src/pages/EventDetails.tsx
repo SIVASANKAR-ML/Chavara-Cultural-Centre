@@ -116,7 +116,6 @@ const EventDetails = () => {
 
           {/* RIGHT SECTION: SIDEBAR */}
           <div className="lg:col-span-1">
-            {/* FIX: Move sticky to this container so children move together */}
             <div className="lg:sticky lg:top-24 space-y-6">
               
               {/* PICK A SESSION CARD */}
@@ -176,45 +175,49 @@ const EventDetails = () => {
                 </div>
               </Card>
 
-              {/* ARTISTS / HOSTS SECTION */}
-              {event.host_name && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="p-6 bg-white rounded-2xl shadow-elegant border-none flex items-center gap-4"
-                >
-                  {/* Fixed Circle Container */}
-                  <div className="w-20 h-20 flex-shrink-0">
-                    <div className="w-full h-full rounded-full overflow-hidden border-2 border-primary/10 bg-slate-50">
-                      {event.host_img ? (
-                        <img 
-                          src={event.host_img} 
-                          alt={event.host_name} 
-                          // FIX: object-cover makes the image fit inside the circle
-                          className="w-full h-full object-cover object-center"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-slate-300">
-                          <User size={32} />
+              {/* ARTISTS / HOSTS SECTION (Updated for multiple hosts) */}
+              {event.hosts && event.hosts.length > 0 && (
+                <div className="space-y-4">
+                  {event.hosts.map((host, index) => (
+                    <motion.div 
+                      key={index}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="p-6 bg-white rounded-2xl shadow-elegant border-none flex items-center gap-4"
+                    >
+                      <div className="w-16 h-16 flex-shrink-0">
+                        <div className="w-full h-full rounded-full overflow-hidden border-2 border-primary/10 bg-slate-50">
+                          {host.host_image ? (
+                            <img 
+                              src={host.host_image} 
+                              alt={host.host_name} 
+                              className="w-full h-full object-cover object-center"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-slate-300">
+                              <User size={32} />
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="flex-1 min-w-0">
-                    <p className="font-serif font-bold text-foreground text-lg truncate">
-                      {event.host_name}
-                    </p>
-                    <p className="text-primary text-xs font-bold uppercase tracking-wider">
-                      Event Host
-                    </p>
-                    {event.host_description && (
-                      <p className="text-muted-foreground text-xs mt-1 line-clamp-2">
-                        {event.host_description}
-                      </p>
-                    )}
-                  </div>
-                </motion.div>
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <p className="font-serif font-bold text-foreground text-lg truncate">
+                          {host.host_name}
+                        </p>
+                        <p className="text-primary text-xs font-bold uppercase tracking-wider">
+                          Event Host
+                        </p>
+                        {host.discription && (
+                          <p className="text-muted-foreground text-xs mt-1 line-clamp-2 italic">
+                            {host.discription}
+                          </p>
+                        )}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
               )}
             </div>
           </div>

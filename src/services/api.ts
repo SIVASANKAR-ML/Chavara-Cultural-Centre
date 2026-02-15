@@ -20,6 +20,13 @@ export interface RowPricing {
   price: number;
 }
 
+
+export interface HostDetail {
+  host_name: string;
+  host_image: string;
+  discription: string; // Matching your DB spelling
+}
+
 export interface EventSchedule {
   name: string;
   show_date: string;
@@ -42,9 +49,10 @@ export interface ChavaraEvent {
   description: string;
   price: number;
   schedules?: EventSchedule[];
-  host_name?: string;
-  host_img?: string;
-  host_description?: string;
+  // host_name?: string;
+  // host_img?: string;
+  // host_description?: string;
+  hosts: HostDetail[]; // NEW: Updated to array
 }
 
 interface FrappeResponse<T> {
@@ -78,7 +86,7 @@ const mapEvent = (ev: any): ChavaraEvent => {
         keys: Object.keys(sched)
       });
     });
-    }
+  }
   
   const mapped = {
     id: ev.name,
@@ -92,9 +100,14 @@ const mapEvent = (ev: any): ChavaraEvent => {
     description: ev.description || "",
     price: ev.price || 0,
     image: ev.event_image || "/placeholder-event.jpg",
-    host_name: ev.host_name,
-    host_img: ev.host_img,
-    host_description: ev.host_description,
+    
+    // NEW: Map the host_details child table array
+    hosts: ev.host_details?.map((h: any) => ({
+      host_name: h.host_name,
+      host_image: h.host_image,
+      discription: h.discription // Matches the DB field name typo
+    })) || [],
+
     schedules: ev.schedules?.map((schedule: any) => {
       // IMPORTANT: Access row_wise_pricing safely and preserve it
       const pricing = schedule.row_wise_pricing;
