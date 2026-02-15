@@ -122,8 +122,8 @@ const EventDetails = () => {
               {/* PICK A SESSION CARD */}
               <Card className="p-8 shadow-elegant border-none rounded-2xl bg-white">
                 <div className="flex items-center gap-2 mb-6">
-                  <Clock className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-serif font-bold">Pick a Session</h2>
+                  {/* <Clock className="h-6 w-6 text-primary" /> */}
+                  {/* <h2 className="text-2xl font-serif font-bold">Pick a Session</h2> */}
                 </div>
 
                 {transformedShowTimes.length > 0 ? (
@@ -147,7 +147,8 @@ const EventDetails = () => {
                             s.show_date === selectedDate && s.show_time === selectedTime
                           );
                           if (schedule) {
-                            navigate(`/seat-booking/${eventId}/${schedule.name}`);
+                            // navigate(`/seat-booking/${eventId}/${schedule.name}`);
+                            navigate(`/verify/${eventId}/${schedule.name}`);
                           }
                         }}
                         className="w-full mt-8 h-12 font-bold"

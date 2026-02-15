@@ -22,6 +22,7 @@ import Signup from "./pages/Signup";    // ✅ Added signup page
 import TicketVerification from "./pages/TicketVerification";
 import SeatBooking from "./pages/SeatBooking";
 import ScrollToTop from "./components/ScrollToTop";
+import CaptchaVerification from "./pages/CaptchaVerification"
 
 const queryClient = new QueryClient();
 
@@ -42,8 +43,11 @@ const App = () => (
               <Route path="/" element={<Home />} />
               <Route path="/events" element={<Events />} />
               <Route path="/calendar" element={<Calendar />} />
-              <Route path="/event/:eventId" element={<EventDetails />} />
+              <Route path="/event/:eventId" element={<EventDetails />} /> 
+
+              <Route path="/verify/:eventId/:scheduleId" element={<CaptchaVerification />} />
               <Route path="/seat-booking/:eventId/:scheduleId" element={<SeatBooking />} />
+              {/* <Route path="/seat-booking/:eventId/:scheduleId" element={<SeatBooking />} /> */}
               {/* <Route path="/venue/:venueId" element={<VenueDetails />} /> */}
               <Route
                 path="/booking-confirmation/:bookingId"

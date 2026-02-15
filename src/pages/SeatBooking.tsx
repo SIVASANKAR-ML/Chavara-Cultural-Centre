@@ -43,7 +43,7 @@ const SeatBooking = () => {
   const [isBooking, setIsBooking] = useState(false);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false); // NEW: Track Admin status
-  const [recaptchaWidgetId, setRecaptchaWidgetId] = useState<number | null>(null);
+  // const [recaptchaWidgetId, setRecaptchaWidgetId] = useState<number | null>(null);
   
   // Customer details state
   const [customerName, setCustomerName] = useState("");
@@ -94,25 +94,25 @@ const SeatBooking = () => {
     return () => clearInterval(interval);
   }, [scheduleId, currentStep.step]);
 
-  // Initialize reCAPTCHA when seats are selected
-  useEffect(() => {
-    if (selectedSeats.length > 0 && !recaptchaWidgetId) {
-      const timer = setTimeout(() => {
-        const grecaptcha = (window as any).grecaptcha;
-        if (grecaptcha && grecaptcha.render) {
-          try {
-            const widgetId = grecaptcha.render('recaptcha-container', {
-              'sitekey': '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
-            });
-            setRecaptchaWidgetId(widgetId);
-          } catch (e) {
-            console.error('reCAPTCHA render error:', e);
-          }
-        }
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [selectedSeats.length, recaptchaWidgetId]);
+  // // Initialize reCAPTCHA when seats are selected
+  // useEffect(() => {
+  //   if (selectedSeats.length > 0 && !recaptchaWidgetId) {
+  //     const timer = setTimeout(() => {
+  //       const grecaptcha = (window as any).grecaptcha;
+  //       if (grecaptcha && grecaptcha.render) {
+  //         try {
+  //           const widgetId = grecaptcha.render('recaptcha-container', {
+  //             'sitekey': '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
+  //           });
+  //           setRecaptchaWidgetId(widgetId);
+  //         } catch (e) {
+  //           console.error('reCAPTCHA render error:', e);
+  //         }
+  //       }
+  //     }, 500);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [selectedSeats.length, recaptchaWidgetId]);
 
   // Handle Seat Selection
   const handleSeatsChange = async (seats: string[], price: number) => {
@@ -167,16 +167,6 @@ const SeatBooking = () => {
     
     // Step 1: Logic to move to Customer Details
     if (currentStep.step === 1) {
-      const grecaptcha = (window as any).grecaptcha;
-      if (!grecaptcha || recaptchaWidgetId === null) {
-        toast.error("reCAPTCHA not loaded. Please wait a moment.");
-        return;
-      }
-      const token = grecaptcha.getResponse(recaptchaWidgetId);
-      if (!token) {
-        toast.error("Please complete the CAPTCHA verification");
-        return;
-      }
       setShowTermsModal(true);
       return;
     }
@@ -378,7 +368,7 @@ const SeatBooking = () => {
               <div className="space-y-4 mb-8 text-sm">
                 <div>
                   <p className="text-[10px] uppercase font-bold text-slate-400 tracking-widest">Event</p>
-                  <p className="font-bold text-slate-800">{event.title}</p>
+                  <p className="font-bold text-slate-800">{event.title}</p> 
                 </div>
                 
                 {selectedSeats.length > 0 && (
@@ -449,13 +439,14 @@ const SeatBooking = () => {
               
               {selectedSeats.length > 0 && currentStep.step === 1 && (
                 <>
-                  <div id="recaptcha-container" className="flex justify-center mt-4"></div>
+                  {/* <div id="recaptcha-container" className="flex justify-center mt-4"></div> */}
                   <p className="text-[10px] font-bold text-slate-400 mt-4 text-center uppercase tracking-widest animate-pulse">
                     Seats locked for 5:00
                   </p>
                 </>
               )}
             </Card>
+
           </div>
         </div>
       </div>

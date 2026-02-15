@@ -55,15 +55,12 @@ const EventCard = ({ event, index = 0 }: EventCardProps) => {
           <div className="space-y-2 text-sm text-muted-foreground flex-grow">
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-primary" />
-              <span>{formatDate(event.startDate)}</span>
+              <span>{formatDate(event.endDate)}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-primary" />
-              <span>{event.day} Only</span>
-            </div>
+        
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-primary" />
-              <span className="line-clamp-1">{event.venue}</span>
+              <span className="line-clamp-1">Chavara Cultural Centre</span>
             </div>
           </div>
           

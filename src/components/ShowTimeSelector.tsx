@@ -48,14 +48,14 @@ const ShowTimeSelector = ({
           {showTimes.map((show) => (
             <motion.button
               key={show.date}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onDateSelect(show.date)}
               className={cn(
                 "px-6 py-3 rounded-lg font-semibold transition-all",
                 selectedDate === show.date
-                  ? "bg-primary text-primary-foreground shadow-lg"
-                  : "bg-card border border-border hover:border-primary hover:bg-primary/5"
+                  ? "bg-primary from-orange-500 to-orange-600 text-white shadow-xl shadow-orange-500/40 ring-2 ring-orange-300 ring-offset-2"
+                  : "bg-primary text-primary-foreground shadow-lg"
               )}
             >
               {formatDate(show.date)}
@@ -87,8 +87,8 @@ const ShowTimeSelector = ({
                   className={cn(
                     "px-6 py-3 rounded-lg font-semibold transition-all",
                     selectedTime === time
-                      ? "bg-accent text-accent-foreground shadow-lg"
-                      : "bg-card border border-border hover:border-accent hover:bg-accent/5"
+                      ? "bg-primary from-orange-500 to-orange-600 text-white shadow-xl shadow-orange-500/40 ring-2 ring-orange-300 ring-offset-2"
+                      : "bg-accent text-accent-foreground shadow-lg"
                   )}
                 >
                   {formatTime(time)}
