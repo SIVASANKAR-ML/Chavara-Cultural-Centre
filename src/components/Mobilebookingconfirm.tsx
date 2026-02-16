@@ -101,7 +101,7 @@ const MobileBookingConfirm = ({
           
           <div className="text-xs text-gray-600">
             <MapPin className="inline h-3 w-3 mr-1" />
-            {event.venue || 'Main Hall'}
+            {'Chavara Cultural Centre'}
           </div>
           
           {/* Cancellation Info */}

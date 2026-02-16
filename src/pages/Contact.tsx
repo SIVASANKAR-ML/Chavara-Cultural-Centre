@@ -76,8 +76,8 @@ const Contact = () => {
                   <div>
                     <h3 className="font-heading font-semibold text-foreground mb-1">Phone</h3>
                     <p className="font-body text-muted-foreground">
-                      +91 1234567890<br />
-                      +91 0987654321
+                    +91 9495142011<br />
+                      
                     </p>
                   </div>
                 </div>
@@ -91,8 +91,8 @@ const Contact = () => {
                   <div>
                     <h3 className="font-heading font-semibold text-foreground mb-1">Email</h3>
                     <p className="font-body text-muted-foreground">
-                      info@chavaracultural.in<br />
-                      bookings@chavaracultural.in
+                    chavarakochi@gmail.com<br />
+                      
                     </p>
                   </div>
                 </div>
