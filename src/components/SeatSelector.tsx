@@ -156,6 +156,7 @@ const SeatSelector = ({
           status === "selected" && colors?.selected,
           status === "available" && colors?.available
         )}
+        style={{ touchAction: 'manipulation' }}
       >
         {seatId.slice(1)}
       </motion.button>
@@ -205,7 +206,7 @@ const SeatSelector = ({
       )}
 
       {/* SEATING AREA */}
-      <div className="w-full overflow-x-auto pb-8 px-2 scrollbar-hide touch-pan-x">
+      <div className="w-full overflow-x-auto pb-8 px-2 scrollbar-hide " style={{ touchAction: 'pan-y pan-x' }}>
         <div className="min-w-fit flex flex-col items-center mx-auto space-y-1 sm:space-y-2">
           {Object.entries(SEAT_MAP).map(([row, blocks]) => (
   <div key={row}>

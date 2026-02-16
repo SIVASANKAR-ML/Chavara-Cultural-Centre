@@ -10,16 +10,8 @@ import { pastEvents, reviews, venue } from "@/data/events";
 // Added API imports
 import { fetchEvents, ChavaraEvent } from "@/services/api";
 
-
-
-const heroImages = [
-  "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1920&h=1080&fit=crop",
-  "https://img.freepik.com/premium-photo/party-event-decoration-asia-beautiful-decorations-cultural-program-wedding-decorations_343960-18475.jpg",
-  "https://kerala.me/wp-content/uploads/2015/11/kerala-culture.jpg",
-];
-
 const heroDialogues = [
-  "Experience the richness of Kerala’s cultural traditions through captivating performances, exhibitions, and events.",
+  "Experience the richness of Kerala's cultural traditions through captivating performances, exhibitions, and events.",
   "Where every rhythm, color, and dance narrates a story of heritage.",
   "Celebrate the essence of art that connects generations together.",
   "Feel the soul of Kerala come alive through culture and creativity.",
@@ -32,6 +24,16 @@ const Home = () => {
   // NEW: State for real backend events
   const [events, setEvents] = useState<ChavaraEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // NEW: Dynamically get hero images from backend events
+  // Fallback to default images if no events are loaded yet
+  const heroImages = events.length > 0 
+    ? events.slice(0, 3).map(event => event.image || event.image)
+    : [
+        "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1920&h=1080&fit=crop",
+        "https://img.freepik.com/premium-photo/party-event-decoration-asia-beautiful-decorations-cultural-program-wedding-decorations_343960-18475.jpg",
+        "https://kerala.me/wp-content/uploads/2015/11/kerala-culture.jpg",
+      ];
 
   // UPDATED: Fetching and filtering logic based on Schedules
   useEffect(() => {
@@ -77,7 +79,7 @@ const Home = () => {
       setCurrentImage((prev) => (prev + 1) % heroImages.length);
     }, 6000);
     return () => clearInterval(interval);
-  }, []);
+  }, [heroImages.length]); // Added dependency on heroImages.length
 
   useEffect(() => {
     const dialogueInterval = setInterval(() => {
@@ -88,7 +90,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
+      {/* Hero Section - NOW USES BACKEND EVENT IMAGES */}
       <section className="relative h-[70vh] min-h-[500px] flex items-center justify-center overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
