@@ -243,7 +243,7 @@ const About = () => {
         </div>
       </section>
 
-      {/* Team Section with Enhanced Layout */}
+      {/* Team Section with Enhanced Layout
       <section className="bg-gradient-to-b from-gray-50 to-white py-20 md:py-28">
         <div className="container mx-auto px-4">
           <motion.div
@@ -281,7 +281,142 @@ const About = () => {
             ))}
           </div>
         </div>
+      </section> */}
+
+    
+
+      {/* Photo Gallery Section - No Headings */}
+      <section className="container mx-auto px-4 py-12 md:py-16">
+        <div className="max-w-7xl mx-auto">
+          {/* Masonry Grid Layout */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+            {/* Large Image - Spans 2 columns on desktop */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="col-span-2 md:col-span-2 md:row-span-2 relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 group"
+            >
+              <img
+                src="https://content3.jdmagicbox.com/v2/comp/ernakulam/a3/0484px484.x484.250714144336.u4a3/catalogue/chavara-cultural-centre-karikkamuri-ernakulam-auditoriums-241ycyrk6m.jpg  "
+                alt="Chavara Cultural Centre Auditorium"
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </motion.div>
+
+            {/* Medium Image */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 group h-48 md:h-auto"
+            >
+              <img
+                src="https://content3.jdmagicbox.com/v2/comp/ernakulam/a3/0484px484.x484.250714144336.u4a3/catalogue/chavara-cultural-centre-karikkamuri-ernakulam-auditoriums-7226211gvb.jpg"
+                alt="Stage Performance"
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </motion.div>
+
+            {/* Medium Image */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 group h-48 md:h-auto"
+            >
+              <img
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgOdwCVk-0TdR16Dhsa_-0G30elWp-gI0_yw&s"
+                alt="Team Collaboration"
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </motion.div>
+
+            {/* Wide Image - Spans 2 columns */}
+
+                 {/* Large Image - Spans 2 columns on desktop */}
+                 <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="col-span-2 md:col-span-2 md:row-span-2 relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 group"
+            >
+              <img
+                src="https://www.chavaraculturalcentre.com/images/resource/feature-2.jpg"
+                alt="Chavara Cultural Centre Auditorium"
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </motion.div>
+
+             {/* Medium Image */}
+             <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 group h-64 md:h-80"
+            >
+              <img
+                src="https://content.jdmagicbox.com/v2/comp/ernakulam/w2/0484px484.x484.000754200325.b4w2/catalogue/chavara-cultural-centre-monastery-road-ernakulam-cultural-centres-SnCufanPBX.jpg"
+                alt="Cultural Event"
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </motion.div>
+
+            <motion.div
+  initial={{ opacity: 0, scale: 0.95 }}
+  whileInView={{ opacity: 1, scale: 1 }}
+  viewport={{ once: true }}
+  transition={{ duration: 0.5, delay: 0.4 }}
+  className="relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 group h-64 md:h-80"
+>
+  {/* Carousel Container */}
+  <div className="relative w-full h-full">
+    {/* Carousel Images */}
+    {[
+      "https://content3.jdmagicbox.com/v2/comp/ernakulam/a3/0484px484.x484.250714144336.u4a3/catalogue/chavara-cultural-centre-karikkamuri-ernakulam-auditoriums-73jl8ixpmy.jpg",
+      "https://images.unsplash.com/photo-1511578314322-379afb476865?w=400&h=500&fit=crop"
+    ].map((src, index) => (
+      <img
+        key={index}
+        src={src}
+        alt={`Cultural Event ${index + 1}`}
+        className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+        style={{
+          animation: `slideCarousel 8s infinite`,
+          animationDelay: `${index * 4}s`,
+          opacity: 0
+        }}
+      />
+    ))}
+  </div>
+  
+  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+  {/* CSS Animation */}
+  <style>{`
+    @keyframes slideCarousel {
+      0%, 45% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+  `}</style>
+</motion.div>
+
+         
+  
+          </div>
+        </div>
       </section>
+
 
       {/* Bottom CTA Section */}
       <section className="container mx-auto px-4 py-16 md:py-20">
@@ -319,4 +454,3 @@ const About = () => {
 };
 
 export default About;
-

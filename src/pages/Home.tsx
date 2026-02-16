@@ -122,7 +122,7 @@ const Home = () => {
 
           <div className="h-24 flex items-center justify-center">
             <AnimatePresence mode="wait">
-              <motion.p
+              {/* <motion.p
                 key={heroDialogues[currentDialogue]}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -131,7 +131,7 @@ const Home = () => {
                 className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto"
               >
                 {heroDialogues[currentDialogue]}
-              </motion.p>
+              </motion.p> */}
             </AnimatePresence>
           </div>
 

@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin } from "lucide-react";
+import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin,Linkedin  } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -48,15 +48,15 @@ const Footer = () => {
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                <span>Chavara, Kerala, India</span>
+                <span>Chavara Cultural Centre, Kerala, India</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4 flex-shrink-0" />
-                <span>+91 1234567890</span>
+                <span>+91 9495142011</span>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 flex-shrink-0" />
-                <span>info@chavaracultural.in</span>
+                <span>chavarakochi@gmail.com</span>
               </li>
             </ul>
           </div>
@@ -97,11 +97,40 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-border text-center text-sm text-muted-foreground">
-          <p>© Chavara Cultural Center 2025 – All Rights Reserved.</p>
+        <div className="mt-8 pt-8 border-t border-border">
+          {/* Developed By Section */}
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
+            <p className="text-sm text-muted-foreground text-center md:text-left">
+              © Chavara Cultural Center 2025 – All Rights Reserved.
+            </p>
+            
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>Developed by</span>
+              <a
+                href="https://www.linkedin.com/in/paul-shaji/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 font-medium transition-colors group"
+              >
+                <span>Paul Shaji</span>
+                <Linkedin className="h-4 w-4 group-hover:scale-110 transition-transform" />
+              </a>
+              <span className="text-muted-foreground/50">•</span>
+              <a
+                href="https://www.linkedin.com/in/sivasankar22/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 font-medium transition-colors group"
+              >
+                <span>Sivasankar M</span>
+                <Linkedin className="h-4 w-4 group-hover:scale-110 transition-transform" />
+              </a>
+            </div>
+          </div>
         </div>
-      </div>
+        </div>
     </footer>
+
   );
 };
 
