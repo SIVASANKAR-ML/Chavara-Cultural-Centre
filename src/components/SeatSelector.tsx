@@ -88,9 +88,6 @@ const SeatSelector = ({
 }: SeatSelectorProps) => {
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
 
-  // Debug: Log rowPricing when component mounts or updates
-  console.log('SeatSelector rowPricing:', rowPricing);
-
   // NEW: Function to get price for a specific row
   const getRowPrice = (row: string): number => {
     const pricing = rowPricing.find(p => {
@@ -99,7 +96,6 @@ const SeatSelector = ({
       return row >= from && row <= to;
     });
     
-    console.log(`Row ${row} pricing:`, pricing?.price || 0);
     return pricing?.price || 0;
   };
 

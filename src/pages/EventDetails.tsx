@@ -359,14 +359,17 @@ const EventDetails = () => {
               >
                 Book Tickets
               </Button>
-            ) : (
+            ) 
+            
+            : (
               <Button 
                 disabled
                 className="w-full h-14 text-base font-bold rounded-lg"
               >
                 Select Date & Time
               </Button>
-            )}
+            )
+            }
           </div>
         )}
       </div>

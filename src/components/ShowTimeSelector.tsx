@@ -18,6 +18,23 @@ const ShowTimeSelector = ({
   onDateSelect,
   onTimeSelect,
 }: ShowTimeSelectorProps) => {
+  // Auto-select first date and first time on mount if nothing is selected
+  const firstDate = showTimes[0]?.date ?? null;
+  const firstTime = showTimes[0]?.times[0] ?? null;
+
+  const effectiveDate = selectedDate ?? firstDate;
+  const effectiveTime = selectedTime ?? firstTime;
+
+  // Notify parent of defaults on first render
+  const hasNotified = typeof window !== "undefined" && (window as any).__showtimeNotified;
+  if (!hasNotified && effectiveDate && effectiveTime) {
+    (window as any).__showtimeNotified = true;
+    setTimeout(() => {
+      if (!selectedDate && effectiveDate) onDateSelect(effectiveDate);
+      if (!selectedTime && effectiveTime) onTimeSelect(effectiveTime);
+    }, 0);
+  }
+
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString("en-US", {
@@ -36,12 +53,11 @@ const ShowTimeSelector = ({
   };
 
   const formatTime = (timeStr: string) => {
-    // Handle time format like "21:59:48.104132" -> "21:59"
     if (!timeStr) return timeStr;
     const timeParts = timeStr.split(".");
-    const mainTime = timeParts[0]; // Get "21:59:48"
+    const mainTime = timeParts[0];
     const timeComponents = mainTime.split(":");
-    return `${timeComponents[0]}:${timeComponents[1]}`; // Return "21:59"
+    return `${timeComponents[0]}:${timeComponents[1]}`;
   };
 
   const formatTime12Hour = (timeStr: string) => {
@@ -74,7 +90,7 @@ const ShowTimeSelector = ({
                 onClick={() => onDateSelect(show.date)}
                 className={cn(
                   "px-6 py-3 rounded-lg font-semibold transition-all",
-                  selectedDate === show.date
+                  effectiveDate === show.date
                     ? "bg-primary from-orange-500 to-orange-600 text-white shadow-xl shadow-orange-500/40 ring-2 ring-orange-300 ring-offset-2"
                     : "bg-primary text-primary-foreground shadow-lg"
                 )}
@@ -86,7 +102,7 @@ const ShowTimeSelector = ({
         </div>
 
         {/* Time Selection */}
-        {selectedDate && (
+        {effectiveDate && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -98,7 +114,7 @@ const ShowTimeSelector = ({
             </h3>
             <div className="flex flex-wrap gap-3">
               {showTimes
-                .find((show) => show.date === selectedDate)
+                .find((show) => show.date === effectiveDate)
                 ?.times.map((time) => (
                   <motion.button
                     key={time}
@@ -107,7 +123,7 @@ const ShowTimeSelector = ({
                     onClick={() => onTimeSelect(time)}
                     className={cn(
                       "px-6 py-3 rounded-lg font-semibold transition-all",
-                      selectedTime === time
+                      effectiveTime === time
                         ? "bg-primary from-orange-500 to-orange-600 text-white shadow-xl shadow-orange-500/40 ring-2 ring-orange-300 ring-offset-2"
                         : "bg-accent text-accent-foreground shadow-lg"
                     )}
@@ -129,8 +145,8 @@ const ShowTimeSelector = ({
             <div className="flex gap-3 pb-2">
               {showTimes.map((show) => {
                 const { day, dayNum, month } = formatDateMobile(show.date);
-                const isSelected = selectedDate === show.date;
-                
+                const isSelected = effectiveDate === show.date;
+
                 return (
                   <motion.button
                     key={show.date}
@@ -164,7 +180,7 @@ const ShowTimeSelector = ({
         </div>
 
         {/* Time Selection - Card Style */}
-        {selectedDate && (
+        {effectiveDate && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -172,14 +188,14 @@ const ShowTimeSelector = ({
             className="px-4"
           >
             <h3 className="font-bold text-base text-gray-900 mb-3">Select Show Time</h3>
-            
+
             <div className="bg-white rounded-xl border border-gray-200 p-4">
               <div className="grid grid-cols-3 gap-2">
                 {showTimes
-                  .find((show) => show.date === selectedDate)
+                  .find((show) => show.date === effectiveDate)
                   ?.times.map((time) => {
-                    const isSelected = selectedTime === time;
-                    
+                    const isSelected = effectiveTime === time;
+
                     return (
                       <motion.button
                         key={time}

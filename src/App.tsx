@@ -53,6 +53,7 @@ const App = () => (
                 path="/booking-confirmation/:bookingId"
                 element={<BookingConfirmation />}
               />
+              
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               

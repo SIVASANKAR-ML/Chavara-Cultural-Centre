@@ -178,9 +178,9 @@ const Home = () => {
           <h2 className="font-serif font-bold text-3xl md:text-4xl text-foreground mb-4">
             Upcoming Events
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          {/* <p className="text-muted-foreground max-w-2xl mx-auto">
             Discover our carefully curated selection of cultural performances and exhibitions
-          </p>
+          </p> */}
         </motion.div>
         {/*  */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -230,9 +230,9 @@ const Home = () => {
             <h2 className="font-serif font-bold text-3xl md:text-4xl text-foreground mb-4">
               Highlights from Past Events
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            {/* <p className="text-muted-foreground max-w-2xl mx-auto">
               Relive the magic of our previous performances
-            </p>
+            </p> */}
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

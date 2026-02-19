@@ -41,9 +41,7 @@ const Events = () => {
     const loadEvents = async () => {
       try {
         setLoading(true);
-        console.log('Fetching events...');
         const fetchedEvents = await fetchEvents();
-        console.log('Fetched events:', fetchedEvents);
         setEvents(fetchedEvents);
       } catch (err) {
         console.error('Error fetching events:', err);

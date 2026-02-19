@@ -19,7 +19,7 @@ const CaptchaVerification = () => {
       if (grecaptcha && grecaptcha.render) {
         try {
           const widgetId = grecaptcha.render('recaptcha-container', {
-            'sitekey': '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI', // Replace with your actual key
+            'sitekey': '6Ld5GmgsAAAAAOlB2yTuCvC47e7BQbC8MxEGG-qM', // Replace with your actual key
             'theme': 'light',
             'size': 'normal',
           });

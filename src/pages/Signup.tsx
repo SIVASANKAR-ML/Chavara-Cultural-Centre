@@ -23,7 +23,7 @@ const Signup: React.FC = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Signup attempted:", form);
+    // console.log("Signup attempted:", form);
   };
 
   return (

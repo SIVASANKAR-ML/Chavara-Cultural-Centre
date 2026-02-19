@@ -71,23 +71,6 @@ export interface VerificationResponse {
 ========================= */
 
 const mapEvent = (ev: any): ChavaraEvent => {
-  console.log('=== mapEvent called ===');
-  console.log('Raw event data:', ev);
-  console.log('Raw schedules:', ev.schedules);
-  
-  if (ev.schedules) {
-    ev.schedules.forEach((sched: any, idx: number) => {
-      console.log(`\nSchedule ${idx}:`, {
-        name: sched.name,
-        raw_row_wise_pricing: sched.row_wise_pricing,
-        pricing_is_array: Array.isArray(sched.row_wise_pricing),
-        pricing_length: sched.row_wise_pricing?.length,
-        full_schedule: sched,
-        keys: Object.keys(sched)
-      });
-    });
-  }
-  
   const mapped = {
     id: ev.name,
     title: ev.event_title,
@@ -109,13 +92,7 @@ const mapEvent = (ev: any): ChavaraEvent => {
     })) || [],
 
     schedules: ev.schedules?.map((schedule: any) => {
-      // IMPORTANT: Access row_wise_pricing safely and preserve it
       const pricing = schedule.row_wise_pricing;
-      console.log(`Mapping schedule ${schedule.name}:`, {
-        raw_pricing: pricing,
-        is_array: Array.isArray(pricing),
-        length: pricing?.length
-      });
       
       return {
         name: schedule.name,
@@ -128,16 +105,6 @@ const mapEvent = (ev: any): ChavaraEvent => {
       };
     }) || [],
   };
-  
-  console.log('Mapped event:', mapped);
-  console.log('Mapped schedules with pricing:', 
-    mapped.schedules.map(s => ({
-      name: s.name, 
-      pricing_count: s.row_wise_pricing.length,
-      pricing: s.row_wise_pricing
-    }))
-  );
-  console.log('=== mapEvent complete ===\n');
   
   return mapped;
 };
@@ -157,11 +124,8 @@ export async function fetchEvents(
       params: search ? { search } : {},
     });
 
-    console.log('fetchEvents raw response:', response.data.message);
-    
     // IMPORTANT: Deep clone to prevent mutation
     const clonedData = JSON.parse(JSON.stringify(response.data.message || []));
-    console.log('fetchEvents cloned data:', clonedData);
     
     return clonedData.map(mapEvent);
   } catch (error) {
@@ -181,23 +145,8 @@ export async function fetchEventById(
       params: { event_id: id },
     });
 
-    console.log('Raw API response for event:', response.data.message);
-    console.log('Schedules from API:', response.data.message?.schedules);
-    
-    // Log each schedule's row_wise_pricing
-    if (response.data.message?.schedules) {
-      response.data.message.schedules.forEach((sched: any, idx: number) => {
-        console.log(`Schedule ${idx} (${sched.name}):`, {
-          name: sched.name,
-          row_wise_pricing: sched.row_wise_pricing,
-          keys: Object.keys(sched)
-        });
-      });
-    }
-    
     // IMPORTANT: Deep clone to prevent mutation
     const clonedData = JSON.parse(JSON.stringify(response.data.message));
-    console.log('Cloned data schedules:', clonedData?.schedules);
     
     return clonedData
       ? mapEvent(clonedData)
@@ -354,7 +303,11 @@ export async function checkScannerAccess(): Promise<boolean> {
   try {
     const response = await axiosClient.get("/method/chavara_booking.api.ticket_verification.check_scanner_access");
     return response.data.message === true;
-  } catch (error) {
+  } catch (error: any) {
+    // 403 is expected for guest/non-staff users — not a real error
+    if (error?.response?.status !== 403) {
+      console.error("checkScannerAccess error:", error);
+    }
     return false;
   }
 }
@@ -459,6 +412,9 @@ export async function initiateRazorpayPayment(bookingId: string, customerData: a
           });
           
           toast.success("Payment Successful!");
+          setTimeout(() => {
+            toast.success("Check Email for Ticket Details!");
+          }, 2000); 
           navigate(`/booking-confirmation/${bookingId}`);
         } else {
           toast.error("Security check failed");
